@@ -1,0 +1,579 @@
+[
+ {
+  "type": "ADDRESS",
+  "tokens": [
+   [
+    0.0,
+    11.0
+   ],
+   [
+    12.0,
+    7.0
+   ],
+   [
+    20.0,
+    2.0
+   ]
+  ],
+  "name": "Mariahilfer Straße 85-87",
+  "id": "",
+  "lat": 48.1975547,
+  "lon": 16.348539,
+  "street": "Mariahilfer Straße",
+  "houseNumber": "85-87",
+  "country": "AT",
+  "zip": "1060",
+  "tz": "Europe/Vienna",
+  "areas": [
+   {
+    "name": "Österreich",
+    "adminLevel": 2.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   },
+   {
+    "name": "Wien",
+    "adminLevel": 4.0,
+    "matched": false,
+    "unique": true,
+    "default": true
+   },
+   {
+    "name": "Mariahilf",
+    "adminLevel": 9.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   },
+   {
+    "name": "Katastralgemeinde Mariahilf",
+    "adminLevel": 10.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   }
+  ],
+  "score": -28.25
+ },
+ {
+  "type": "ADDRESS",
+  "tokens": [
+   [
+    0.0,
+    11.0
+   ],
+   [
+    12.0,
+    7.0
+   ],
+   [
+    20.0,
+    2.0
+   ]
+  ],
+  "name": "Mariahilfer Straße 85-87",
+  "id": "",
+  "lat": 48.1975467,
+  "lon": 16.3484196,
+  "street": "Mariahilfer Straße",
+  "houseNumber": "85-87",
+  "country": "AT",
+  "zip": "1060",
+  "tz": "Europe/Vienna",
+  "areas": [
+   {
+    "name": "Österreich",
+    "adminLevel": 2.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   },
+   {
+    "name": "Wien",
+    "adminLevel": 4.0,
+    "matched": false,
+    "unique": true,
+    "default": true
+   },
+   {
+    "name": "Mariahilf",
+    "adminLevel": 9.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   },
+   {
+    "name": "Katastralgemeinde Mariahilf",
+    "adminLevel": 10.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   }
+  ],
+  "score": -28.25
+ },
+ {
+  "type": "ADDRESS",
+  "tokens": [
+   [
+    0.0,
+    11.0
+   ],
+   [
+    12.0,
+    7.0
+   ],
+   [
+    20.0,
+    2.0
+   ]
+  ],
+  "name": "Mariahilfer Straße 85-87",
+  "id": "",
+  "lat": 48.1971234,
+  "lon": 16.3487159,
+  "street": "Mariahilfer Straße",
+  "houseNumber": "85-87",
+  "country": "AT",
+  "zip": "1060",
+  "tz": "Europe/Vienna",
+  "areas": [
+   {
+    "name": "Österreich",
+    "adminLevel": 2.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   },
+   {
+    "name": "Wien",
+    "adminLevel": 4.0,
+    "matched": false,
+    "unique": true,
+    "default": true
+   },
+   {
+    "name": "Mariahilf",
+    "adminLevel": 9.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   },
+   {
+    "name": "Katastralgemeinde Mariahilf",
+    "adminLevel": 10.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   }
+  ],
+  "score": -28.25
+ },
+ {
+  "type": "ADDRESS",
+  "tokens": [
+   [
+    0.0,
+    11.0
+   ],
+   [
+    12.0,
+    7.0
+   ],
+   [
+    20.0,
+    2.0
+   ]
+  ],
+  "name": "Mariahilfer Straße 85-87",
+  "id": "",
+  "lat": 48.1974908,
+  "lon": 16.3482061,
+  "street": "Mariahilfer Straße",
+  "houseNumber": "85-87",
+  "country": "AT",
+  "zip": "1060",
+  "tz": "Europe/Vienna",
+  "areas": [
+   {
+    "name": "Österreich",
+    "adminLevel": 2.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   },
+   {
+    "name": "Wien",
+    "adminLevel": 4.0,
+    "matched": false,
+    "unique": true,
+    "default": true
+   },
+   {
+    "name": "Mariahilf",
+    "adminLevel": 9.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   },
+   {
+    "name": "Katastralgemeinde Mariahilf",
+    "adminLevel": 10.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   }
+  ],
+  "score": -28.25
+ },
+ {
+  "type": "ADDRESS",
+  "tokens": [
+   [
+    0.0,
+    11.0
+   ],
+   [
+    12.0,
+    7.0
+   ],
+   [
+    20.0,
+    2.0
+   ]
+  ],
+  "name": "Mariahilfer Straße 85-87",
+  "id": "",
+  "lat": 48.1974789,
+  "lon": 16.3483264,
+  "street": "Mariahilfer Straße",
+  "houseNumber": "85-87",
+  "country": "AT",
+  "zip": "1060",
+  "tz": "Europe/Vienna",
+  "areas": [
+   {
+    "name": "Österreich",
+    "adminLevel": 2.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   },
+   {
+    "name": "Wien",
+    "adminLevel": 4.0,
+    "matched": false,
+    "unique": true,
+    "default": true
+   },
+   {
+    "name": "Mariahilf",
+    "adminLevel": 9.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   },
+   {
+    "name": "Katastralgemeinde Mariahilf",
+    "adminLevel": 10.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   }
+  ],
+  "score": -28.25
+ },
+ {
+  "type": "ADDRESS",
+  "tokens": [
+   [
+    0.0,
+    11.0
+   ],
+   [
+    12.0,
+    7.0
+   ],
+   [
+    20.0,
+    2.0
+   ]
+  ],
+  "name": "Mariahilfer Straße 85-87",
+  "id": "",
+  "lat": 48.1975266,
+  "lon": 16.3483436,
+  "street": "Mariahilfer Straße",
+  "houseNumber": "85-87",
+  "country": "AT",
+  "zip": "1060",
+  "tz": "Europe/Vienna",
+  "areas": [
+   {
+    "name": "Österreich",
+    "adminLevel": 2.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   },
+   {
+    "name": "Wien",
+    "adminLevel": 4.0,
+    "matched": false,
+    "unique": true,
+    "default": true
+   },
+   {
+    "name": "Mariahilf",
+    "adminLevel": 9.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   },
+   {
+    "name": "Katastralgemeinde Mariahilf",
+    "adminLevel": 10.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   }
+  ],
+  "score": -28.25
+ },
+ {
+  "type": "STOP",
+  "tokens": [
+   [
+    0.0,
+    11.0
+   ],
+   [
+    12.0,
+    7.0
+   ],
+   [
+    20.0,
+    2.0
+   ]
+  ],
+  "name": "Füssen, Mariahilfer Str.",
+  "id": "de-DELFI_de:09777:1411:0:1",
+  "lat": 47.575436,
+  "lon": 10.684607,
+  "country": "DE",
+  "zip": "87629",
+  "tz": "Europe/Berlin",
+  "areas": [
+   {
+    "name": "Deutschland",
+    "adminLevel": 2.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   },
+   {
+    "name": "Bayern",
+    "adminLevel": 4.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   },
+   {
+    "name": "Schwaben",
+    "adminLevel": 5.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   },
+   {
+    "name": "Landkreis Ostallgäu",
+    "adminLevel": 6.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   },
+   {
+    "name": "Füssen",
+    "adminLevel": 8.0,
+    "matched": false,
+    "unique": true,
+    "default": true
+   }
+  ],
+  "score": -19.600000381469727,
+  "modes": [
+   "BUS",
+   "ODM"
+  ],
+  "importance": 8.323542033394915e-07
+ },
+ {
+  "type": "STOP",
+  "tokens": [
+   [
+    0.0,
+    11.0
+   ],
+   [
+    12.0,
+    7.0
+   ],
+   [
+    20.0,
+    2.0
+   ]
+  ],
+  "name": "Wien Mariahilfer Straße/Kaiserstraße",
+  "id": "at-PTA-Eastern-Region-Flex-2026_at:49:643:0:1",
+  "lat": 48.19673405,
+  "lon": 16.341585710000004,
+  "country": "AT",
+  "zip": "1070",
+  "tz": "Europe/Vienna",
+  "areas": [
+   {
+    "name": "Österreich",
+    "adminLevel": 2.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   },
+   {
+    "name": "Wien",
+    "adminLevel": 4.0,
+    "matched": false,
+    "unique": true,
+    "default": true
+   },
+   {
+    "name": "Neubau",
+    "adminLevel": 9.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   },
+   {
+    "name": "Katastralgemeinde Neubau",
+    "adminLevel": 10.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   }
+  ],
+  "score": -17.100000381469727,
+  "modes": [
+   "TRAM"
+  ],
+  "importance": 0.00011836251360364258
+ },
+ {
+  "type": "PLACE",
+  "category": "parking_16",
+  "tokens": [
+   [
+    0.0,
+    11.0
+   ],
+   [
+    12.0,
+    7.0
+   ]
+  ],
+  "name": "Mariahilfer Straße",
+  "id": "node/1193358746",
+  "lat": 48.1953245,
+  "lon": 16.3414691,
+  "country": "AT",
+  "zip": "1060",
+  "tz": "Europe/Vienna",
+  "areas": [
+   {
+    "name": "Österreich",
+    "adminLevel": 2.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   },
+   {
+    "name": "Wien",
+    "adminLevel": 4.0,
+    "matched": false,
+    "unique": true,
+    "default": true
+   },
+   {
+    "name": "Mariahilf",
+    "adminLevel": 9.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   },
+   {
+    "name": "Katastralgemeinde Mariahilf",
+    "adminLevel": 10.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   }
+  ],
+  "score": -17.0
+ },
+ {
+  "type": "ADDRESS",
+  "tokens": [
+   [
+    0.0,
+    11.0
+   ],
+   [
+    12.0,
+    7.0
+   ],
+   [
+    20.0,
+    2.0
+   ]
+  ],
+  "name": "Mariazeller Straße 85",
+  "id": "",
+  "lat": 48.1901932,
+  "lon": 15.6183002,
+  "street": "Mariazeller Straße",
+  "houseNumber": "85",
+  "country": "AT",
+  "zip": "3100",
+  "tz": "Europe/Vienna",
+  "areas": [
+   {
+    "name": "Österreich",
+    "adminLevel": 2.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   },
+   {
+    "name": "Niederösterreich",
+    "adminLevel": 4.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   },
+   {
+    "name": "St. Pölten",
+    "adminLevel": 6.0,
+    "matched": false,
+    "unique": true,
+    "default": true
+   },
+   {
+    "name": "Katastralgemeinde St. Pölten",
+    "adminLevel": 10.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   }
+  ],
+  "score": -15.113636016845703
+ }
+]
