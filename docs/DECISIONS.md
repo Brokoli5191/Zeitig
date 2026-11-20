@@ -152,3 +152,42 @@ given; re-verify before relying on them.
   runs `:data:testDebugUnitTest` itself and opens a PR with `GITHUB_TOKEN`.
 - **Caveat:** PRs created with `GITHUB_TOKEN` do not trigger CI, and creating them requires the
   repository setting "Allow GitHub Actions to create and approve pull requests".
+
+## D17 – Journeys: the first boarding drives the leave time
+
+- **Context:** Routes now come from a journey planner (several legs, transfers), but real-time data
+  exists only per Wiener Linien stop point.
+- **Choice:** A `Journey` is a list of walk and transit legs. The first transit leg carries a
+  `LineTarget` (matched WL stop point, line, direction); its live departures decide `leaveAt`.
+  Everything after the boarding is the planned "onward" time and gives the arrival estimate.
+  Offline "simple" routes are a two-leg journey (walk + one line).
+- **Rejected:** Re-planning the whole journey online on every refresh (rate limits of a volunteer
+  service, no real-time there anyway).
+
+## D18 – Leave-time engine details
+
+- **Grace:** `leaveAt ≥ now − min(60 s, buffer)` counts as catchable. Without it, the "Leave now!"
+  state would flip to the next departure a second after the alarm. The grace never exceeds the
+  buffer the user chose, so with buffer 0 the rule is exactly `leaveAt ≥ now` as specified.
+- **Arrive-by:** choose the *latest* catchable departure whose estimated arrival meets the deadline
+  (leave as late as possible); if none does, the earliest one plus how late it will be.
+- **Too late vs. no service:** departures within 60 minutes that are all unreachable give
+  `TooLate`; no departures at all give `NoService`. Neither is an empty screen.
+- **Identity of a run:** stop + line + *planned* time, so real-time drift does not look like a new
+  vehicle; reminders and missed-departure detection key on it.
+
+## D19 – Learning the walking time
+
+- **Choice:** EWMA (α = 0.3) seeded with the first estimate and replayed over the accepted trips
+  (oldest first), at most 50 trips. A trip > 2 × median is rejected, but only once three trips
+  exist – a first estimate that is far off must not lock out the real values. Trips under 20 s are
+  implausible (e.g. "I'm there" tapped immediately).
+- **Rejected:** A running EWMA without stored samples – could neither drop old trips nor recompute
+  after a reset or a settings change.
+
+## D20 – Reminders 5/3/1/now
+
+- **Choice:** Configurable minutes before `leaveAt` (default 5, 3, 1, 0). Each fires once per vehicle
+  run; a different run resets them. When several are overdue at once only the most urgent is
+  delivered, and one more than 90 s late is skipped silently – except "leave now", which always
+  arrives.
