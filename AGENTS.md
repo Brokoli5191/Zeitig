@@ -14,9 +14,11 @@ choices in `docs/DECISIONS.md` (context, choice, rejected alternatives).
 ```sh
 ./gradlew spotlessApply                      # format (ktlint via Spotless)
 ./gradlew spotlessCheck lint testDebugUnitTest verifyRoborazziDebug :core:koverVerify assembleDebug   # = CI
+./gradlew :baselineprofile:compileNonMinifiedReleaseKotlin   # CI's second step
 ./gradlew recordRoborazziDebug               # re-record reference screenshots into docs/screenshots/
 ./gradlew :core:test :core:koverHtmlReport   # engine tests + coverage report (gate: 90 % lines)
 ./gradlew :app:assembleRelease -PappVersionName=1.2.0 -PappVersionCode=1020099   # needs SIGNING_* env
+./gradlew :app:generateBaselineProfile       # managed emulator, needs KVM; usually via the workflow
 ```
 
 JDK 21, Gradle wrapper only. Long tasks: run in the background and poll. In the cloud container,
@@ -30,6 +32,7 @@ Maven Central rate-limits bursts (HTTP 429); use `--no-parallel` and
 | `:core` | Kotlin/JVM, no Android | Domain model, leave-time engine, walk-time model, schedules, stop search, transit network index, `DepartureProvider` / routing interfaces |
 | `:data` | Android library | Wiener Linien OGD client + parser, global rate limiter, reference-data snapshot/refresh, Transitous routing client, Room, DataStore |
 | `:app` | Android app | Compose UI, theme, notifications, services, widget, tile, `AppContainer` (manual DI) |
+| `:baselineprofile` | Android test | Baseline Profile generator and start-up benchmark (needs an emulator or phone, not in CI) |
 
 Package root: `app.brokoli5191.zeitig` (permanent – never change the application ID).
 

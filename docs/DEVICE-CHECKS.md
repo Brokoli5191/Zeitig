@@ -46,7 +46,9 @@ app-ops it toggles are restored at the end, and Doze is unforced.
 | 23 | "My location once" | Route editor | One fix, then location stops (no location indicator afterwards). |
 | 24 | Reboot | Reboot with a scheduled route | `dumpsys alarm` lists the window alarm again after boot. |
 | 25 | Battery | *Settings › Battery › App power management* | Zeitig is not "Deep sleeping"; note the default Samsung puts it in. |
+| 26 | Cold start | `./gradlew :baselineprofile:connectedBenchmarkReleaseAndroidTest` with the phone connected (installs a debug-signed build: uninstall a release install first) | `startupWithBaselineProfile` has a clearly lower median `timeToInitialDisplayMs` than `startupWithoutProfile`; note both medians. |
 
 ## Notes for the README
 
-Results of items 6, 7, 20 and 25 on the S23 go into the README's "Known limitations" section.
+Results of items 6, 7, 20 and 25 on the S23 go into the README's "Known limitations" section; the
+start-up medians of item 26 go next to the Baseline Profile note.

@@ -316,3 +316,43 @@ given; re-verify before relying on them.
 - **Tile:** shows the most urgent route and starts or stops the countdown. Whether a tile tap may
   start a foreground service from the background is not documented; if the system refuses, the
   tile opens the app, which starts it while visible.
+
+## D31 – Baseline Profile, generated on demand
+
+- **Context:** a Compose app with MapLibre starts noticeably slower while ART still interprets or
+  JIT-compiles. Sideloaded APKs get no cloud profiles from Play.
+- **Choice:** a `:baselineprofile` test module using the `androidx.baselineprofile` plugin 1.5.0,
+  which works with AGP 9 without `newDsl=false`. It records the first-run path: start, the empty
+  home screen, route editor, settings, appearance and about.
+  - **Generation:** a Gradle Managed Device (Pixel 6, API 34, AOSP image) in the manual
+    "Baseline profile" workflow. `ubuntu-latest` provides KVM through a udev rule, and the
+    emulator renders with `swiftshader_indirect`; the option name was checked in the AGP 9.5.2
+    jar.
+  - **Storage:** the result is committed under `app/src/release/generated/baselineProfiles/`.
+  - **On the phone:** `profileinstaller` hands the profile to ART on the first start of a
+    sideloaded install.
+- **Builds stay emulator-free:** `automaticGenerationDuringBuild = false`. CI and `release.yml`
+  never start an emulator, and `release.yml` stays verbatim.
+- **Signing:** the plugin's `nonMinifiedRelease` and `benchmarkRelease` build types inherit the
+  release signing config. The Variant API switches them to the debug key, so generating a profile
+  never needs the release secrets.
+- **Measuring:** `StartupBenchmark` compares a cold start without and with the profile. Only a
+  real phone gives meaningful numbers (device check 26).
+
+## D32 – Release APK
+
+- **Size:** 18.9 MB with R8 and resource shrinking (measured with a throwaway key, 2026-11-20).
+  - MapLibre's native libraries are 13.2 MB of that: 4.6 MB x86_64, 4.6 MB arm64-v8a and
+    4.0 MB armeabi-v7a.
+  - Dex code is 4.4 MB.
+  - x86_64 stays in for emulators, Chromebooks and profile generation.
+  - ABI splits would break the "exactly one APK" contract of `release.yml`.
+- **Locales:** `androidResources.localeFilters = en, de`. AndroidX ships about 80 languages,
+  which would mix untranslated app text with translated library text.
+- **Signing schemes:** v2 and v3. v3 allows rotating the key later (`apksigner rotate`) without
+  breaking updates. v1 is pointless with minSdk 28. `apksigner verify` lists v2 only with
+  `--min-sdk-version 24` because it checks the APK's own SDK range.
+- **Contract check:** `assembleRelease` with the `SIGNING_*` variables and
+  `-PappVersionName=0.1.0-rc1 -PappVersionCode=1001` produces exactly one APK. `apksigner` and
+  `aapt2 dump badging` confirm the signature, versionName and versionCode – the same checks
+  `release.yml` runs.

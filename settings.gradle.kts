@@ -30,4 +30,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Zeitig"
 
-include(":app", ":core", ":data")
+include(":app", ":core", ":data", ":baselineprofile")
