@@ -27,8 +27,8 @@ Maven Central rate-limits bursts (HTTP 429); use `--no-parallel` and
 
 | Module | Kind | Content |
 |---|---|---|
-| `:core` | Kotlin/JVM, no Android | Domain model, leave-time engine, walk-time model, time windows, stop search, `DepartureProvider` interface |
-| `:data` | Android library | Wiener Linien OGD client + parser, global rate limiter, reference-data snapshot/refresh, Room, DataStore |
+| `:core` | Kotlin/JVM, no Android | Domain model, leave-time engine, walk-time model, schedules, stop search, transit network index, `DepartureProvider` / routing interfaces |
+| `:data` | Android library | Wiener Linien OGD client + parser, global rate limiter, reference-data snapshot/refresh, Transitous routing client, Room, DataStore |
 | `:app` | Android app | Compose UI, theme, notifications, services, widget, tile, `AppContainer` (manual DI) |
 
 Package root: `app.brokoli5191.zeitig` (permanent – never change the application ID).
@@ -37,7 +37,8 @@ Package root: `app.brokoli5191.zeitig` (permanent – never change the applicati
 
 - Kotlin + Jetpack Compose + Material 3 Expressive, single activity, ViewModel + `StateFlow` (UDF).
 - Manual DI via `AppContainer`; no Hilt/Koin. No Retrofit; OkHttp + kotlinx.serialization.
-- No Google Play Services, no trackers, no analytics. `INTERNET` only in the provider and CSV refresh.
+- No Google Play Services, no trackers, no analytics. Network access only for: the Wiener Linien
+  provider and CSV refresh, opt-in Transitous routing/geocoding, and map tiles (basemap.at).
 - All OGD requests go through the single global rate limiter (≥ 15 s apart).
 - Inject `java.time.Clock` everywhere; all API times are parsed with their offset and handled in
   `Europe/Vienna`.
