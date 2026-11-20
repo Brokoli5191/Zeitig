@@ -231,4 +231,61 @@
         <item quantity="one">%1$d× pro Woche</item>
         <item quantity="other">%1$d× pro Woche</item>
     </plurals>
+
+    <!-- Benachrichtigungen, Live-Countdown, Gehzeit-Messung, Widget und Kachel -->
+    <string name="channel_alerts">Erinnerungen zum Losgehen</string>
+    <string name="channel_alerts_description">Erinnerungen vor dem Losgehen und der Moment, in dem du gehen musst</string>
+    <string name="channel_live">Live-Countdown</string>
+    <string name="channel_live_description">Der laufende Countdown, solange Zeitig deine Wege beobachtet</string>
+    <string name="channel_trip">Gehzeit-Messung</string>
+    <string name="channel_trip_description">Sichtbar, solange Zeitig misst, wie lang du zur Haltestelle brauchst</string>
+    <string name="channel_disruptions">Störungen</string>
+    <string name="channel_disruptions_description">Neue Störungen und Aufzugsausfälle auf deinen Wegen</string>
+    <string name="channel_window">Beginn eines Zeitfensters</string>
+    <string name="channel_window_description">Meldet den Beginn eines Zeitfensters, wenn der Countdown nicht von selbst starten kann</string>
+    <string name="live_waiting">Warte auf Echtzeitdaten …</string>
+    <string name="notify_leave_now">%1$s: Jetzt losgehen!</string>
+    <string name="notify_leave_in">%1$s: In %2$d Min. losgehen</string>
+    <string name="notify_details">%1$s → %2$s um %3$s</string>
+    <string name="notify_details_arrival">%1$s → %2$s um %3$s · an %4$s</string>
+    <string name="notify_missed">%1$s: Abfahrt verpasst</string>
+    <string name="notify_missed_next">Nächste: %1$s um %2$s – in %3$d Min. losgehen</string>
+    <string name="notify_disruption">%1$s: Störung</string>
+    <string name="notify_window">%1$s: Zeitfenster hat begonnen</string>
+    <string name="notify_window_text">Starte den Countdown, um zu sehen, wann du losmusst.</string>
+    <string name="notify_trip">%1$s: Gehzeit wird gemessen</string>
+    <string name="notify_trip_distance">Noch %1$d m zur Haltestelle</string>
+    <string name="notify_trip_manual">Tippe auf „Angekommen“, sobald du bei der Haltestelle bist</string>
+    <string name="notify_trip_starting">Gehzeit-Messung startet …</string>
+    <string name="trip_recorded">Gehzeit gespeichert: %1$d Min.</string>
+    <string name="trip_outlier">%1$d Min. sind ungewöhnlich lang – gespeichert, aber nicht zum Lernen verwendet</string>
+    <string name="trip_implausible">Messung verworfen – unter 20 Sekunden ist kein Fußweg</string>
+    <string name="trip_timed_out">Messung beendet: innerhalb von 30 Minuten keine Ankunft bei der Haltestelle</string>
+    <string name="action_stop">Beenden</string>
+    <string name="action_leaving">Ich geh los</string>
+    <string name="action_arrived">Angekommen</string>
+    <string name="action_start_live">Countdown starten</string>
+    <string name="action_watch">Beobachten</string>
+    <string name="action_stop_watching">Nicht mehr beobachten</string>
+    <string name="watching">Wird beobachtet</string>
+    <string name="notifications_allow">Benachrichtigungen erlauben</string>
+    <string name="notifications_allow_summary">Nötig für Erinnerungen und den Live-Countdown</string>
+    <string name="exact_alarms">Wecker und Erinnerungen</string>
+    <string name="exact_alarms_on">An – der Countdown startet pünktlich von selbst</string>
+    <string name="exact_alarms_off">Aus – zu Beginn eines Zeitfensters fragt eine Benachrichtigung, ob der Countdown starten soll</string>
+    <string name="live_updates">Live-Updates</string>
+    <string name="live_updates_on">An – der Countdown darf in der Statusleiste und am Sperrbildschirm stehen</string>
+    <string name="live_updates_off">Aus – der Countdown bleibt eine gewöhnliche Benachrichtigung</string>
+    <string name="tile_leave_in">%1$s · in %2$d Min. los</string>
+    <string name="tile_watching">Countdown läuft</string>
+    <string name="tile_start">Tippen startet den Countdown</string>
+    <string name="widget_description">Wann du zu deinem nächsten Weg losmusst</string>
+    <string name="widget_empty">Leg in der App einen Weg an</string>
+    <string name="widget_next_window">Nächstes Mal: %1$s, %2$s</string>
+    <string name="widget_departure_realtime">%1$s → %2$s · %3$s</string>
+    <string name="widget_departure_timetable">%1$s → %2$s · %3$s (Fahrplan)</string>
+    <plurals name="other_routes">
+        <item quantity="one">+%1$d weiterer Weg</item>
+        <item quantity="other">+%1$d weitere Wege</item>
+    </plurals>
 </resources>

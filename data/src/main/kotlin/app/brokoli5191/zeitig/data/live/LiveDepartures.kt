@@ -64,6 +64,12 @@ public class LiveDepartures(
             merged(stops, lines)
         }
 
+    /** What is in memory for [stops] right now, without touching the network. */
+    public suspend fun cached(
+        stops: Set<StopId>,
+        lines: Set<String> = emptySet(),
+    ): LiveSnapshot = mutex.withLock { merged(stops, lines) }
+
     /** Emits a snapshot every [interval] while collected; stop collecting to stop the network. */
     public fun poll(
         stops: Set<StopId>,
