@@ -1,0 +1,54 @@
+{
+ "version": 8,
+ "sprite": "../sprites/sprite",
+ "glyphs": "../fonts/{fontstack}/{range}.pbf",
+ "sources": {
+  "esri": {
+   "type": "vector",
+   "bounds": [
+    8.8587,
+    45.7823,
+    17.1608,
+    49.5752
+   ],
+   "minzoom": 0,
+   "maxzoom": 19,
+   "scheme": "xyz",
+   "url": "../../"
+  }
+ },
+ "layers": [
+  {
+   "id": "NUTZUNG/NUTZUNG_L0-8/Wald",
+   "type": "fill",
+   "source": "esri",
+   "source-layer": "NUTZUNG_L0-8",
+   "filter": [
+    "==",
+    "_symbol",
+    1
+   ],
+   "maxzoom": 7,
+   "layout": {},
+   "paint": {
+    "fill-color": "rgba(71,179,18,0.25)"
+   }
+  },
+  {
+   "id": "NUTZUNG/NUTZUNG_L0-8/Landwirtschaft | Grünfläche",
+   "type": "fill",
+   "source": "esri",
+   "source-layer": "NUTZUNG_L0-8",
+   "filter": [
+    "==",
+    "_symbol",
+    0
+   ],
+   "maxzoom": 7,
+   "layout": {},
+   "paint": {
+    "fill-color": "rgba(235,255,170,0.25)"
+   }
+  }
+ ]
+}
