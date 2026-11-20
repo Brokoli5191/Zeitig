@@ -159,4 +159,14 @@ ask "24" "After a reboot: 'adb shell dumpsys alarm | grep $pkg' lists the window
 ask "25" "Settings › Battery › App power management: is Zeitig 'Deep sleeping' or restricted by default?"
 
 log ""
+log "## 26 Cold start"
+printf '\nRun the start-up benchmark now? It installs a debug-signed benchmarkRelease build (fails over a\nrelease-signed install) and takes about 10 minutes. (y/N) '
+read -r run_bench || run_bench=""
+if [[ "$run_bench" == [yY]* ]]; then
+  ANDROID_SERIAL="$serial" ./gradlew :baselineprofile:connectedBenchmarkReleaseAndroidTest 2>&1 | tail -n 30 | block
+  find baselineprofile/build/outputs -name '*benchmarkData.json' -print 2>/dev/null | block
+fi
+ask "26" "Median timeToInitialDisplayMs without / with Baseline Profile?"
+
+log ""
 log "Report written to $report"
