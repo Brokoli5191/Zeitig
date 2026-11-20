@@ -7,13 +7,14 @@ Thanks for helping Vienna leave on time.
 - No accounts, no backend, no analytics, no ads, no Google Play Services. Pull requests that add
   any of these will be declined, however small.
 - New dependencies need a reason in `docs/DECISIONS.md` (licence, size, maintenance, network use).
-- Network access exists only in the Wiener Linien provider and the reference-data refresh.
+- Network access exists only for the Wiener Linien provider and the reference-data refresh, the
+  opt-in Transitous routing and address search, and basemap.at map tiles while the map is on.
 
 ## Workflow
 
 1. Open an issue first for anything bigger than a typo.
 2. Branch from `main`, keep commits small and use [Conventional Commits](https://www.conventionalcommits.org/)
-   (`feat:`, `fix:`, `docs:`, `build:`, `ci:`, `test:`, `refactor:`, `chore:`).
+   (`feat:`, `fix:`, `perf:`, `docs:`, `build:`, `ci:`, `test:`, `refactor:`, `chore:`).
 3. Run the same task set as CI before pushing:
 
    ```sh
@@ -23,7 +24,9 @@ Thanks for helping Vienna leave on time.
 
 4. If you changed UI, re-record the reference screenshots with `./gradlew recordRoborazziDebug` and
    commit the images in `docs/screenshots/` together with the code.
-5. Label the pull request with exactly one of `feature`, `fix` or `maintenance`; release notes are
+5. Behaviour only a real phone can show (notifications, alarms, Doze, location, widget, tile) gets
+   an item in `docs/DEVICE-CHECKS.md` and `scripts/device-checks.sh`.
+6. Label the pull request with exactly one of `feature`, `fix` or `maintenance`; release notes are
    generated from these labels.
 
 ## Code style
