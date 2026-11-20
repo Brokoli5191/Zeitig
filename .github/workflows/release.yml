@@ -1,0 +1,250 @@
+# .github/workflows/release.yml
+#
+# Builds a signed release APK and publishes a GitHub Release, including the tag.
+#
+# Two ways to release:
+#   1. Actions tab -> "Release" -> Run workflow -> version "1.2.0" or "1.2.0-rc1"
+#      (or: gh api -X POST repos/{owner}/{repo}/actions/workflows/release.yml/dispatches \
+#             -f ref=main -f "inputs[version]=1.2.0")
+#      The workflow creates the tag v1.2.0 itself on the dispatched commit - but only
+#      after the build succeeded, so a failed build never leaves an orphan tag.
+#   2. Push a tag v1.2.0 manually; the workflow then releases that existing tag.
+#
+# Version scheme: MAJOR.MINOR.PATCH[-rcN], MINOR/PATCH 0-99, N 1-98.
+#   versionCode = MAJOR*1000000 + MINOR*10000 + PATCH*100 + (N for rcN, 99 for final)
+#   -> 1.2.0-rc1 = 1020001, 1.2.0-rc2 = 1020002, 1.2.0 = 1020099. Strictly increasing,
+#      so release candidates update cleanly to the final build.
+#
+# Gradle contract (app/build.gradle.kts must implement this):
+#   - versionName/versionCode from -PappVersionName / -PappVersionCode, fallback 0.0.0-dev / 1
+#   - release signingConfig from env: SIGNING_KEYSTORE_PATH, SIGNING_STORE_PASSWORD,
+#     SIGNING_KEY_ALIAS, SIGNING_KEY_PASSWORD
+#   - exactly one APK in app/build/outputs/apk/release/
+#
+# Repo secrets: SIGNING_KEYSTORE_B64 (base64 of the .jks), SIGNING_STORE_PASSWORD,
+#               SIGNING_KEY_ALIAS, SIGNING_KEY_PASSWORD
+# Release notes: GitHub-generated from merged PRs (categories via .github/release.yml).
+
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version without leading v, e.g. 1.2.0 or 1.2.0-rc1"
+        required: true
+        type: string
+  push:
+    tags: ["v*.*.*"]
+
+permissions: {}
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+env:
+  APP_NAME: zeitig            # file name prefix: zeitig-v1.2.0.apk
+  APP_DISPLAY_NAME: Zeitig    # release title: "Zeitig 1.2.0"
+
+jobs:
+  prepare:
+    name: Validate version
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+      tag: ${{ steps.v.outputs.tag }}
+      code: ${{ steps.v.outputs.code }}
+      prerelease: ${{ steps.v.outputs.prerelease }}
+      sha: ${{ steps.v.outputs.sha }}
+    steps:
+      - name: Resolve and validate version
+        id: v
+        env:
+          EVENT: ${{ github.event_name }}
+          INPUT_VERSION: ${{ inputs.version }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          fail() { echo "::error::$*"; exit 1; }
+
+          re='^(0|[1-9][0-9]*)\.(0|[1-9][0-9]?)\.(0|[1-9][0-9]?)(-rc([1-9][0-9]?))?$'
+          code_of() {
+            local v="${1#v}"
+            [[ "$v" =~ $re ]] || return 1
+            local rc="${BASH_REMATCH[5]:-}"
+            [[ -n "$rc" && "$rc" -gt 98 ]] && return 1
+            echo $(( ${BASH_REMATCH[1]} * 1000000 + ${BASH_REMATCH[2]} * 10000 + ${BASH_REMATCH[3]} * 100 + ${rc:-99} ))
+          }
+
+          if [[ "$EVENT" == "workflow_dispatch" ]]; then
+            [[ "$GITHUB_REF" == "refs/heads/$DEFAULT_BRANCH" ]] \
+              || fail "Dispatch releases only from $DEFAULT_BRANCH (got $GITHUB_REF)"
+            version="${INPUT_VERSION#v}"
+          else
+            version="${GITHUB_REF_NAME#v}"
+          fi
+          tag="v$version"
+
+          code="$(code_of "$version")" \
+            || fail "'$version' is not MAJOR.MINOR.PATCH[-rcN] (MINOR/PATCH 0-99, N 1-98)"
+          (( code <= 2100000000 )) || fail "versionCode $code exceeds Android's limit"
+
+          if [[ "$EVENT" == "workflow_dispatch" ]] \
+             && gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$tag" > /dev/null 2>&1; then
+            fail "Tag $tag already exists"
+          fi
+
+          # Android refuses downgrades: the new versionCode must beat every existing tag.
+          max=0
+          while read -r t; do
+            [[ -z "$t" || "$t" == "$tag" ]] && continue
+            c="$(code_of "$t")" || continue
+            if (( c > max )); then max=$c; fi
+          done < <(gh api "repos/$GITHUB_REPOSITORY/tags" --paginate --jq '.[].name')
+          (( code > max )) || fail "versionCode $code is not above the highest existing release ($max)"
+
+          prerelease=false
+          [[ "$version" == *-rc* ]] && prerelease=true
+          {
+            echo "version=$version"
+            echo "tag=$tag"
+            echo "code=$code"
+            echo "prerelease=$prerelease"
+            echo "sha=$GITHUB_SHA"
+          } >> "$GITHUB_OUTPUT"
+          echo "Releasing $tag (versionCode $code, prerelease=$prerelease) from $GITHUB_SHA"
+
+  build:
+    name: Build signed APK
+    needs: prepare
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    env:
+      VERSION: ${{ needs.prepare.outputs.version }}
+      VERSION_CODE: ${{ needs.prepare.outputs.code }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.prepare.outputs.sha }}
+          persist-credentials: false
+
+      - uses: gradle/actions/wrapper-validation@v5
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - uses: gradle/actions/setup-gradle@v5
+        with:
+          cache-read-only: true
+
+      - name: Check signing secrets
+        env:
+          SIGNING_KEYSTORE_B64: ${{ secrets.SIGNING_KEYSTORE_B64 }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+        run: |
+          missing=()
+          for s in SIGNING_KEYSTORE_B64 SIGNING_STORE_PASSWORD SIGNING_KEY_ALIAS SIGNING_KEY_PASSWORD; do
+            [[ -n "${!s}" ]] || missing+=("$s")
+          done
+          if (( ${#missing[@]} )); then
+            echo "::error::Missing repository secrets: ${missing[*]}"
+            exit 1
+          fi
+
+      - name: Decode keystore
+        env:
+          SIGNING_KEYSTORE_B64: ${{ secrets.SIGNING_KEYSTORE_B64 }}
+        run: |
+          umask 077
+          printf '%s' "$SIGNING_KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/release.jks"
+
+      - name: Build release APK
+        env:
+          SIGNING_KEYSTORE_PATH: ${{ runner.temp }}/release.jks
+          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+        run: ./gradlew :app:assembleRelease -PappVersionName="$VERSION" -PappVersionCode="$VERSION_CODE"
+
+      - name: Remove keystore
+        if: always()
+        run: rm -f "$RUNNER_TEMP/release.jks"
+
+      - name: Collect and verify APK
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          apks=(app/build/outputs/apk/release/*.apk)
+          (( ${#apks[@]} == 1 )) || { echo "::error::Expected exactly one release APK, found ${#apks[@]}"; exit 1; }
+
+          mkdir -p dist
+          out="dist/${APP_NAME}-v${VERSION}.apk"
+          mv "${apks[0]}" "$out"
+
+          bt="$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)"
+          "$bt/apksigner" verify --verbose --print-certs "$out"
+
+          badging="$("$bt/aapt2" dump badging "$out" | head -1)"
+          echo "$badging"
+          grep -q "versionCode='$VERSION_CODE'" <<< "$badging" || { echo "::error::versionCode mismatch"; exit 1; }
+          grep -q "versionName='$VERSION'" <<< "$badging" || { echo "::error::versionName mismatch"; exit 1; }
+
+          (cd dist && sha256sum -- *.apk > SHA256SUMS.txt && cat SHA256SUMS.txt)
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v4
+        with:
+          subject-path: dist/*.apk
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: release-dist
+          path: dist/
+          if-no-files-found: error
+          retention-days: 7
+
+  publish:
+    name: Tag and publish release
+    needs: [prepare, build]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: release-dist
+          path: dist
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT: ${{ github.event_name }}
+          TAG: ${{ needs.prepare.outputs.tag }}
+          SHA: ${{ needs.prepare.outputs.sha }}
+          VERSION: ${{ needs.prepare.outputs.version }}
+          PRERELEASE: ${{ needs.prepare.outputs.prerelease }}
+        run: |
+          set -euo pipefail
+          args=(--repo "$GITHUB_REPOSITORY" --title "$APP_DISPLAY_NAME $VERSION" --generate-notes)
+          if [[ "$EVENT" == "workflow_dispatch" ]]; then
+            args+=(--target "$SHA")   # tag does not exist yet: gh creates it on this commit
+          else
+            args+=(--verify-tag)      # manual tag push: release exactly that tag
+          fi
+          if [[ "$PRERELEASE" == "true" ]]; then
+            args+=(--prerelease --latest=false)
+          else
+            args+=(--latest)
+          fi
+          gh release create "$TAG" dist/*.apk dist/SHA256SUMS.txt "${args[@]}"
