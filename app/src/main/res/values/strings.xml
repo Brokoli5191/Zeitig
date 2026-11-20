@@ -241,4 +241,61 @@
         <item quantity="one">%1$d× a week</item>
         <item quantity="other">%1$d× a week</item>
     </plurals>
+
+    <!-- Notifications, live countdown, walk measurement, widget and tile -->
+    <string name="channel_alerts">Leave reminders</string>
+    <string name="channel_alerts_description">Reminders before you have to leave and the moment it is time to go</string>
+    <string name="channel_live">Live countdown</string>
+    <string name="channel_live_description">The ongoing countdown while Zeitig watches your routes</string>
+    <string name="channel_trip">Walk measurement</string>
+    <string name="channel_trip_description">Shown while Zeitig measures how long you take to the stop</string>
+    <string name="channel_disruptions">Disruptions</string>
+    <string name="channel_disruptions_description">New disruptions and lift outages on your routes</string>
+    <string name="channel_window">Time window starts</string>
+    <string name="channel_window_description">Tells you a route\'s time window has begun when the countdown cannot start by itself</string>
+    <string name="live_waiting">Waiting for live departures…</string>
+    <string name="notify_leave_now">%1$s: leave now!</string>
+    <string name="notify_leave_in">%1$s: leave in %2$d min</string>
+    <string name="notify_details">%1$s → %2$s at %3$s</string>
+    <string name="notify_details_arrival">%1$s → %2$s at %3$s · arrive %4$s</string>
+    <string name="notify_missed">%1$s: departure missed</string>
+    <string name="notify_missed_next">Next: %1$s at %2$s – leave in %3$d min</string>
+    <string name="notify_disruption">%1$s: disruption</string>
+    <string name="notify_window">%1$s: time window has started</string>
+    <string name="notify_window_text">Start the countdown to see when to leave.</string>
+    <string name="notify_trip">%1$s: measuring your walk</string>
+    <string name="notify_trip_distance">%1$d m to the stop</string>
+    <string name="notify_trip_manual">Tap Arrived when you reach the stop</string>
+    <string name="notify_trip_starting">Starting walk measurement…</string>
+    <string name="trip_recorded">Walk recorded: %1$d min</string>
+    <string name="trip_outlier">%1$d min is unusually long – kept, but not used for learning</string>
+    <string name="trip_implausible">Measurement discarded – under 20 seconds is not a walk</string>
+    <string name="trip_timed_out">Measurement stopped: no arrival at the stop within 30 minutes</string>
+    <string name="action_stop">Stop</string>
+    <string name="action_leaving">I\'m leaving</string>
+    <string name="action_arrived">Arrived</string>
+    <string name="action_start_live">Start countdown</string>
+    <string name="action_watch">Watch</string>
+    <string name="action_stop_watching">Stop watching</string>
+    <string name="watching">Watching</string>
+    <string name="notifications_allow">Allow notifications</string>
+    <string name="notifications_allow_summary">Needed for reminders and the live countdown</string>
+    <string name="exact_alarms">Alarms &amp; reminders</string>
+    <string name="exact_alarms_on">On – the countdown starts on time by itself</string>
+    <string name="exact_alarms_off">Off – when a window starts, a notification asks you to start the countdown</string>
+    <string name="live_updates">Live updates</string>
+    <string name="live_updates_on">On – the countdown may sit in the status bar and on the lock screen</string>
+    <string name="live_updates_off">Off – the countdown stays an ordinary notification</string>
+    <string name="tile_leave_in">%1$s · leave in %2$d min</string>
+    <string name="tile_watching">Countdown running</string>
+    <string name="tile_start">Tap to start the countdown</string>
+    <string name="widget_description">When you have to leave for your next route</string>
+    <string name="widget_empty">Add a route in the app</string>
+    <string name="widget_next_window">Next: %1$s %2$s</string>
+    <string name="widget_departure_realtime">%1$s → %2$s · %3$s</string>
+    <string name="widget_departure_timetable">%1$s → %2$s · %3$s (timetable)</string>
+    <plurals name="other_routes">
+        <item quantity="one">+%1$d more route</item>
+        <item quantity="other">+%1$d more routes</item>
+    </plurals>
 </resources>

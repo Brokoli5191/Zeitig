@@ -6,6 +6,7 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,6 +31,10 @@ import app.brokoli5191.zeitig.BuildConfig
 import app.brokoli5191.zeitig.R
 import app.brokoli5191.zeitig.locale.AppLanguages
 import app.brokoli5191.zeitig.location.OneShotLocation
+import app.brokoli5191.zeitig.monitor.MonitoringService
+import app.brokoli5191.zeitig.notify.NotificationSettings
+import app.brokoli5191.zeitig.notify.rememberNotificationStatus
+import app.brokoli5191.zeitig.trip.TripService
 import app.brokoli5191.zeitig.ui.editor.EditorActions
 import app.brokoli5191.zeitig.ui.editor.RouteEditorScreen
 import app.brokoli5191.zeitig.ui.editor.RouteEditorViewModel
@@ -52,16 +57,27 @@ import app.brokoli5191.zeitig.ui.settings.SettingsScreen
 import app.brokoli5191.zeitig.ui.settings.SettingsViewModel
 import com.mikepenz.aboutlibraries.Libs
 import com.mikepenz.aboutlibraries.util.withContext
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun ZeitigNavHost(
     container: AppContainer,
+    permissions: PermissionRequests,
+    openRouteRequests: Flow<Long>,
     modifier: Modifier = Modifier,
-    requestLocationPermission: (onResult: (Boolean) -> Unit) -> Unit,
 ) {
+    val requestLocationPermission = permissions::location
     val backStack = rememberNavBackStack(HomeKey)
+    LaunchedEffect(openRouteRequests) {
+        openRouteRequests.collect { id ->
+            backStack.removeAll { it is RouteKey || it is EditorKey }
+            backStack.add(RouteKey(id))
+        }
+    }
+    val countdownRoutes by container.statusBoard.active.collectAsStateWithLifecycle()
+    val notificationStatus = rememberNotificationStatus()
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val listDetail = rememberListDetailStrategy<NavKey>()
@@ -117,6 +133,20 @@ fun ZeitigNavHost(
                                     onDelete = { vm.delete { backStack.removeAll { it == key } } },
                                     onShareEta = ::share,
                                     onResetLearning = vm::resetLearning,
+                                    watching = key.id in countdownRoutes,
+                                    onWatch = { on ->
+                                        if (on) {
+                                            // Without notifications the countdown still runs in the app, widget and tile.
+                                            permissions.notifications { MonitoringService.start(context, key.id) }
+                                        } else {
+                                            context.startService(MonitoringService.unwatchIntent(context, key.id))
+                                        }
+                                    },
+                                    onStartTrip = {
+                                        requestLocationPermission { granted ->
+                                            if (granted) TripService.start(context, key.id)
+                                        }
+                                    },
                                     map = { route, mod -> RouteMap(route.journey, tiles, mod) },
                                 )
                             }
@@ -190,11 +220,19 @@ fun ZeitigNavHost(
                                 actions =
                                     SettingsActions(
                                         onBack = { backStack.removeLastOrNull() },
+                                        onAllowNotifications = {
+                                            permissions.notifications { granted ->
+                                                if (!granted) NotificationSettings.openNotifications(context)
+                                            }
+                                        },
+                                        onExactAlarms = { NotificationSettings.openExactAlarms(context) },
+                                        onLiveUpdates = { NotificationSettings.openLiveUpdates(context) },
                                         onAppearance = { backStack.add(AppearanceKey) },
                                         onAbout = { backStack.add(AboutKey) },
                                         onUpdate = vm::update,
                                         onRefreshData = vm::refreshData,
                                     ),
+                                notifications = notificationStatus,
                             )
                         }
                         entry<AppearanceKey> {
@@ -246,6 +284,13 @@ fun ZeitigNavHost(
             )
         }
     }
+}
+
+/** Runtime permission requests, implemented by the activity. Callbacks get whether it was granted. */
+interface PermissionRequests {
+    fun location(onResult: (Boolean) -> Unit)
+
+    fun notifications(onResult: (Boolean) -> Unit)
 }
 
 /** Provides the entry's animated scope for shared bounds; harmless where none exists. */

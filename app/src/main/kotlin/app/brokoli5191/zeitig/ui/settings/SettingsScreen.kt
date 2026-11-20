@@ -27,6 +27,7 @@ import app.brokoli5191.zeitig.R
 import app.brokoli5191.zeitig.data.reference.RefreshResult
 import app.brokoli5191.zeitig.data.settings.AppSettings
 import app.brokoli5191.zeitig.data.settings.DistanceUnit
+import app.brokoli5191.zeitig.notify.NotificationStatus
 import app.brokoli5191.zeitig.ui.components.ConnectedChoice
 import app.brokoli5191.zeitig.ui.components.RowItem
 import app.brokoli5191.zeitig.ui.components.SectionHeader
@@ -40,6 +41,9 @@ import kotlin.math.roundToInt
 
 data class SettingsActions(
     val onBack: () -> Unit = {},
+    val onAllowNotifications: () -> Unit = {},
+    val onExactAlarms: () -> Unit = {},
+    val onLiveUpdates: () -> Unit = {},
     val onAppearance: () -> Unit = {},
     val onAbout: () -> Unit = {},
     val onUpdate: ((AppSettings) -> AppSettings) -> Unit = {},
@@ -52,6 +56,7 @@ fun SettingsScreen(
     state: SettingsUiState,
     actions: SettingsActions,
     modifier: Modifier = Modifier,
+    notifications: NotificationStatus = NotificationStatus(notificationsAllowed = true, exactAlarms = false, liveUpdates = true),
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val settings = state.settings
@@ -136,6 +141,30 @@ fun SettingsScreen(
             }
 
             SectionHeader(stringResource(R.string.section_reminders))
+            if (!notifications.notificationsAllowed) {
+                NavRow(
+                    R.drawable.ic_notifications,
+                    stringResource(R.string.notifications_allow),
+                    stringResource(R.string.notifications_allow_summary),
+                    actions.onAllowNotifications,
+                )
+            }
+            notifications.exactAlarms?.let { exact ->
+                NavRow(
+                    R.drawable.ic_alarm,
+                    stringResource(R.string.exact_alarms),
+                    stringResource(if (exact) R.string.exact_alarms_on else R.string.exact_alarms_off),
+                    actions.onExactAlarms,
+                )
+            }
+            notifications.liveUpdates?.let { promoted ->
+                NavRow(
+                    R.drawable.ic_timer,
+                    stringResource(R.string.live_updates),
+                    stringResource(if (promoted) R.string.live_updates_on else R.string.live_updates_off),
+                    actions.onLiveUpdates,
+                )
+            }
             SliderRow(
                 title = stringResource(R.string.default_buffer, settings.defaultBufferSeconds / 60),
                 value = (settings.defaultBufferSeconds / 60).toFloat(),

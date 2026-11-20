@@ -169,6 +169,7 @@ dependencies {
     implementation(libs.materialkolor)
     implementation(libs.maplibre.android)
     implementation(libs.aboutlibraries.core)
+    implementation(libs.androidx.glance.appwidget)
     debugImplementation(libs.compose.ui.tooling)
     debugImplementation(libs.compose.ui.test.manifest)
 
