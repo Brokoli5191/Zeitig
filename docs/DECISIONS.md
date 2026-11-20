@@ -256,3 +256,63 @@ given; re-verify before relying on them.
 - **Choice:** every main screen in light/dark × English/German, plus high contrast, pure black and
   200 % font scale (German, the longer language). Seed colours instead of wallpaper colours and
   motion off keep the images deterministic. Robolectric 4.18.1 renders at the target SDK (37).
+
+## D26 – Live countdown: one specialUse foreground service, only when needed
+
+- **Context:** Reminders at 5/3/1/0 minutes must arrive on time with the screen off. Android 12+
+  restricts starting foreground services from the background, Doze defers alarms and network, and
+  exact alarms need a permission that new installs on Android 14+ do not have by default.
+- **Choice:** `MonitoringService`, a foreground service of type `specialUse` (with the subtype
+  property for review), runs only while a route's window is active or the user watches a route,
+  and stops by itself after 3 hours. The countdown in its notification is a system chronometer
+  counting down to `leaveAt`, so it is exact to the second without per-second updates. On
+  Android 16 the notification asks to be promoted to a Live Update (`setRequestPromotedOngoing`,
+  `ProgressStyle`, `POST_PROMOTED_NOTIFICATIONS`); where the user or the device refuses, it stays
+  an ordinary ongoing notification.
+- **Network:** every 30 s while the screen is on; with the screen off only right before a reminder.
+  All requests still pass the global 15 s limiter and the shared live cache.
+- **Rejected:** WorkManager (15-minute minimum, not exact); `USE_EXACT_ALARM` (reserved for alarm
+  clock and calendar apps); `shortService` (3-minute limit); `dataSync` (daily time limit on
+  Android 15); a service that runs all day.
+
+## D27 – Waking up with and without exact alarms
+
+- **Window start:** one alarm per route at its next window. With "Alarms & reminders" granted it
+  is exact and starts the service directly (exact allow-while-idle alarms may start foreground
+  services). Without it, an inexact `setWindow` alarm (10-minute window, the minimum since
+  Android 12) posts a "time window has started – start the countdown" notification, and opening
+  the app during a window starts the countdown too. Alarms are re-armed on every route change,
+  after boot, app update, time or time-zone change and when the permission changes.
+- **Inside a running service:** the next reminder gets a backup alarm (exact, or inexact 9 minutes
+  early) and, in the last 10 minutes before it, a partial wake lock, so the coroutine timer is not
+  stretched by deep sleep.
+- **Samsung Now Bar:** whether One UI shows third-party Live Updates there is not documented; it is
+  a device check, not a promise.
+
+## D28 – A stop means "this window", not "forever"
+
+- **Choice:** "Stop" (notification action or swipe, tile, route toggle) records the time; a window
+  that began before it stays stopped, the next occurrence runs normally. Turning off one route
+  mutes only that route for its current window. "I'm leaving" mutes the route as well, so no
+  reminder for the next tram follows the user to the stop. Manually watched routes expire after
+  3 hours, so a process death never revives yesterday's watch.
+- **Disruptions:** announced once per disruption id; an id is forgotten after a week without being
+  seen, so a long lift outage is not announced every morning.
+
+## D29 – Measuring the walk
+
+- **Choice:** `TripService`, a foreground service of type `location`, started from the app or the
+  "I'm leaving" notification action – both count as while-in-use starts. Without location
+  permission the action opens the app, which asks first. Location comes from `LocationManager`
+  (fused provider on Android 12+, else GPS and network), every 5 s or 5 m. Arrival is a fix within
+  40 m of the boarding stop with an accuracy of at most 60 m, or the "Arrived" button; after
+  30 minutes the measurement ends unrecorded. Only the duration is stored, never a position.
+
+## D30 – Widget and tile
+
+- **Widget:** Glance, refreshed by the service after each evaluation. The countdown is a
+  `RemoteViews` chronometer counting down by itself; outside a countdown the widget shows the next
+  window. Tapping opens the app.
+- **Tile:** shows the most urgent route and starts or stops the countdown. Whether a tile tap may
+  start a foreground service from the background is not documented; if the system refuses, the
+  tile opens the app, which starts it while visible.

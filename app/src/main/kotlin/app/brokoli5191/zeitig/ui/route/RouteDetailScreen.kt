@@ -17,8 +17,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingToolbarDefaults
+import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumFlexibleTopAppBar
 import androidx.compose.material3.Scaffold
@@ -63,6 +66,7 @@ import app.brokoli5191.zeitig.ui.format.wholeMinutes
 import app.brokoli5191.zeitig.ui.navigation.sharedRouteBounds
 import app.brokoli5191.zeitig.ui.status.LeaveDisplay
 import app.brokoli5191.zeitig.ui.status.scheduleText
+import app.brokoli5191.zeitig.ui.theme.rememberHaptics
 import java.time.DayOfWeek
 import java.time.Instant
 import java.time.format.TextStyle
@@ -88,6 +92,9 @@ fun RouteDetailScreen(
     onResetLearning: () -> Unit,
     modifier: Modifier = Modifier,
     showBack: Boolean = true,
+    watching: Boolean = false,
+    onWatch: (Boolean) -> Unit = {},
+    onStartTrip: () -> Unit = {},
     map: @Composable (Route, Modifier) -> Unit = { _, _ -> },
 ) {
     val route = state.route
@@ -131,23 +138,28 @@ fun RouteDetailScreen(
             }
             return@Scaffold
         }
-        Column(
-            modifier =
-                Modifier.fillMaxSize().padding(
-                    padding,
-                ).verticalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            Hero(route, display, state.status)
-            Alternatives(display, state.now)
-            DisruptionBanner(state.status?.disruptions.orEmpty())
-            map(route, Modifier.fillMaxWidth().height(240.dp).clip(RoundedCornerShape(28.dp)))
-            SectionCard(title = stringResource(R.string.section_way)) {
-                LegTimeline(route.journey, accessWalk = state.status?.walk?.duration)
+        Box(Modifier.fillMaxSize().padding(padding)) {
+            Column(
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        // Room below the last card so the floating toolbar never covers it.
+                        .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 112.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                Hero(route, display, state.status)
+                Alternatives(display, state.now)
+                DisruptionBanner(state.status?.disruptions.orEmpty())
+                map(route, Modifier.fillMaxWidth().height(240.dp).clip(RoundedCornerShape(28.dp)))
+                SectionCard(title = stringResource(R.string.section_way)) {
+                    LegTimeline(route.journey, accessWalk = state.status?.walk?.duration)
+                }
+                state.status?.let { WalkCard(it, onResetLearning) }
+                state.stats?.takeIf { it.trips > 0 }?.let { StatsCard(it) }
+                ScheduleCard(route)
             }
-            state.status?.let { WalkCard(it, onResetLearning) }
-            state.stats?.takeIf { it.trips > 0 }?.let { StatsCard(it) }
-            ScheduleCard(route)
+            ActionToolbar(watching, onWatch, onStartTrip, Modifier.align(Alignment.BottomCenter).padding(bottom = 16.dp))
         }
     }
     if (confirmDelete && route != null) {
@@ -259,6 +271,44 @@ private fun Hero(
                 RealtimeIndicator(realtime)
             }
         }
+    }
+}
+
+/** The two things you do on the way out: watch the countdown, or start measuring the walk. */
+@Composable
+private fun ActionToolbar(
+    watching: Boolean,
+    onWatch: (Boolean) -> Unit,
+    onStartTrip: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val haptics = rememberHaptics()
+    HorizontalFloatingToolbar(
+        expanded = true,
+        modifier = modifier,
+        floatingActionButton = {
+            FloatingToolbarDefaults.VibrantFloatingActionButton(onClick = {
+                haptics.confirm()
+                onStartTrip()
+            }) {
+                Icon(painterResource(R.drawable.ic_directions_walk), contentDescription = stringResource(R.string.action_leaving))
+            }
+        },
+    ) {
+        IconToggleButton(checked = watching, onCheckedChange = {
+            haptics.toggle(it)
+            onWatch(it)
+        }) {
+            Icon(
+                painterResource(if (watching) R.drawable.ic_notifications_filled else R.drawable.ic_notifications),
+                contentDescription = stringResource(if (watching) R.string.action_stop_watching else R.string.action_watch),
+            )
+        }
+        Text(
+            stringResource(if (watching) R.string.watching else R.string.action_watch),
+            modifier = Modifier.padding(end = 12.dp),
+            style = MaterialTheme.typography.labelLarge,
+        )
     }
 }
 
