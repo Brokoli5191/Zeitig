@@ -1,0 +1,22 @@
+* text=auto eol=lf
+
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Bundled Wiener Linien snapshots keep the upstream CRLF bytes so the refresh
+# workflow's byte-for-byte diff stays meaningful.
+app/src/main/assets/ogd/*.csv -text
+
+*.png binary
+*.jpg binary
+*.webp binary
+*.gif binary
+*.jar binary
+*.jks binary
+*.keystore binary
+*.ttf binary
+*.otf binary
+*.pdf binary
+
+gradlew text eol=lf
+*.sh text eol=lf
