@@ -1,5 +1,8 @@
 package app.brokoli5191.zeitig.core.network
 
+import app.brokoli5191.zeitig.core.journey.Journey
+import app.brokoli5191.zeitig.core.journey.Leg
+import app.brokoli5191.zeitig.core.journey.LegPoint
 import app.brokoli5191.zeitig.core.model.Direction
 import app.brokoli5191.zeitig.core.model.Diva
 import app.brokoli5191.zeitig.core.model.GeoPoint
@@ -11,6 +14,7 @@ import app.brokoli5191.zeitig.core.model.StopId
 import app.brokoli5191.zeitig.core.model.StopPoint
 import app.brokoli5191.zeitig.core.model.TransportType
 import org.junit.jupiter.api.Test
+import java.time.Duration
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -111,6 +115,37 @@ class TransitNetworkTest {
         assertNull(network.matchBoarding("U1", GeoPoint(48.30, 16.37), null))
         // Without a next stop the closest boardable platform wins.
         assertEquals(StopId(11), network.matchBoarding("U1", GeoPoint(48.2000, 16.37), null)?.stopId)
+    }
+
+    @Test
+    fun `nearest stop of a line`() {
+        assertEquals(StopId(31), network.nearestStopOfLine("U1", GeoPoint(48.2199, 16.37)))
+        assertNull(network.nearestStopOfLine("U1", GeoPoint(48.4, 16.37)))
+        assertNull(network.nearestStopOfLine("U9", GeoPoint(48.22, 16.37)))
+    }
+
+    @Test
+    fun `attaching a planned journey adds boarding targets and stop ids`() {
+        val walk = Leg.Walk(LegPoint("Home", GeoPoint(48.209, 16.37)), LegPoint("Beta", GeoPoint(48.2100, 16.37)), Duration.ofMinutes(3))
+        val u1 =
+            Leg.Transit(
+                from = LegPoint("Beta", GeoPoint(48.2100, 16.37)),
+                to = LegPoint("Gamma", GeoPoint(48.2200, 16.37)),
+                duration = Duration.ofMinutes(2),
+                line = "U1",
+                type = TransportType.METRO,
+                headsign = "Gamma",
+            )
+        val train = u1.copy(line = "REX 7", from = LegPoint("Gamma", GeoPoint(48.22, 16.37)), to = LegPoint("Far", GeoPoint(48.5, 16.37)))
+        val noLocation = u1.copy(from = LegPoint("Somewhere", null))
+        val attached = network.attach(Journey(listOf(walk, u1, train, noLocation)))
+        val matched = attached.legs[1] as Leg.Transit
+        assertEquals(LineTarget(StopId(21), "U1", Direction.OUTBOUND), matched.boarding)
+        assertEquals(StopId(21), matched.from.stopId)
+        assertEquals(StopId(31), matched.to.stopId)
+        assertEquals(train, attached.legs[2], "other operators stay on the timetable")
+        assertEquals(noLocation, attached.legs[3])
+        assertEquals(walk, attached.legs[0])
     }
 
     @Test

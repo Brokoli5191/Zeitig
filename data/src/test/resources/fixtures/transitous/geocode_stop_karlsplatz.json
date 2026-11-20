@@ -1,0 +1,288 @@
+[
+ {
+  "type": "STOP",
+  "tokens": [
+   [
+    0.0,
+    10.0
+   ]
+  ],
+  "name": "Wien Karlsplatz",
+  "id": "at-PTA-Eastern-Region-Flex-2026_Pat:49:657",
+  "lat": 48.20088353,
+  "lon": 16.36890348,
+  "level": -3.0,
+  "country": "AT",
+  "zip": "1010",
+  "tz": "Europe/Vienna",
+  "areas": [
+   {
+    "name": "Österreich",
+    "adminLevel": 2.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   },
+   {
+    "name": "Wien",
+    "adminLevel": 4.0,
+    "matched": false,
+    "unique": true,
+    "default": true
+   },
+   {
+    "name": "Innere Stadt",
+    "adminLevel": 9.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   },
+   {
+    "name": "Katastralgemeinde Innere Stadt",
+    "adminLevel": 10.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   }
+  ],
+  "score": -23.83317756652832,
+  "modes": [
+   "SUBWAY",
+   "TRAM",
+   "BUS"
+  ],
+  "importance": 0.03527402505278587
+ },
+ {
+  "type": "STOP",
+  "tokens": [
+   [
+    0.0,
+    10.0
+   ]
+  ],
+  "name": "Wien Oper/Karlsplatz",
+  "id": "at-PTA-Eastern-Region-Flex-2026_at:49:975:0:2",
+  "lat": 48.20230253000001,
+  "lon": 16.370152140000002,
+  "country": "AT",
+  "zip": "1010",
+  "tz": "Europe/Vienna",
+  "areas": [
+   {
+    "name": "Österreich",
+    "adminLevel": 2.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   },
+   {
+    "name": "Wien",
+    "adminLevel": 4.0,
+    "matched": false,
+    "unique": true,
+    "default": true
+   },
+   {
+    "name": "Innere Stadt",
+    "adminLevel": 9.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   },
+   {
+    "name": "Katastralgemeinde Innere Stadt",
+    "adminLevel": 10.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   }
+  ],
+  "score": -20.899999618530273,
+  "modes": [
+   "TRAM",
+   "BUS"
+  ],
+  "importance": 0.0011918718228116632
+ },
+ {
+  "type": "STOP",
+  "tokens": [
+   [
+    0.0,
+    10.0
+   ]
+  ],
+  "name": "Karlsplatz (Stachus)",
+  "id": "de-DELFI_de:09162:1_G",
+  "lat": 48.139454,
+  "lon": 11.565619000000002,
+  "level": -3.0,
+  "country": "DE",
+  "zip": "80335",
+  "tz": "Europe/Berlin",
+  "areas": [
+   {
+    "name": "Deutschland",
+    "adminLevel": 2.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   },
+   {
+    "name": "Bayern",
+    "adminLevel": 4.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   },
+   {
+    "name": "Oberbayern",
+    "adminLevel": 5.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   },
+   {
+    "name": "München",
+    "adminLevel": 6.0,
+    "matched": false,
+    "unique": true,
+    "default": true
+   },
+   {
+    "name": "Altstadt-Lehel",
+    "adminLevel": 9.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   }
+  ],
+  "score": -20.590360641479492,
+  "modes": [
+   "SUBURBAN",
+   "SUBWAY",
+   "TRAM",
+   "BUS"
+  ],
+  "importance": 0.014216388575732708
+ },
+ {
+  "type": "STOP",
+  "tokens": [
+   [
+    0.0,
+    10.0
+   ]
+  ],
+  "name": "Essen Karlsplatz",
+  "id": "de-DELFI_de:05113:9370",
+  "lat": 51.499184,
+  "lon": 7.006742000000001,
+  "country": "DE",
+  "zip": "45329",
+  "tz": "Europe/Berlin",
+  "areas": [
+   {
+    "name": "Deutschland",
+    "adminLevel": 2.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   },
+   {
+    "name": "Nordrhein-Westfalen",
+    "adminLevel": 4.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   },
+   {
+    "name": "Regierungsbezirk Düsseldorf",
+    "adminLevel": 5.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   },
+   {
+    "name": "Essen",
+    "adminLevel": 6.0,
+    "matched": false,
+    "unique": true,
+    "default": true
+   },
+   {
+    "name": "Stadtbezirk V",
+    "adminLevel": 9.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   },
+   {
+    "name": "Altenessen-Nord",
+    "adminLevel": 10.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   }
+  ],
+  "score": -20.168716430664062,
+  "modes": [
+   "SUBWAY",
+   "BUS",
+   "ODM"
+  ],
+  "importance": 0.0027987519279122353
+ },
+ {
+  "type": "STOP",
+  "tokens": [
+   [
+    0.0,
+    10.0
+   ]
+  ],
+  "name": "Vienna (Karlsplatz)",
+  "id": "eu-flixbus_dcc20d95-9603-11e6-9066-549f350fcb0c",
+  "lat": 48.200810000000004,
+  "lon": 16.369839,
+  "country": "AT",
+  "zip": "1010",
+  "tz": "Europe/Vienna",
+  "areas": [
+   {
+    "name": "Österreich",
+    "adminLevel": 2.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   },
+   {
+    "name": "Wien",
+    "adminLevel": 4.0,
+    "matched": false,
+    "unique": true,
+    "default": true
+   },
+   {
+    "name": "Innere Stadt",
+    "adminLevel": 9.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   },
+   {
+    "name": "Katastralgemeinde Innere Stadt",
+    "adminLevel": 10.0,
+    "matched": false,
+    "unique": false,
+    "default": false
+   }
+  ],
+  "score": -20.100000381469727,
+  "modes": [
+   "COACH"
+  ],
+  "importance": 6.384040898410603e-05
+ }
+]
