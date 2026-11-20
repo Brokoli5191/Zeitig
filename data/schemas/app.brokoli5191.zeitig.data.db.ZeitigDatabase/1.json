@@ -1,0 +1,225 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "cc967f5897e895096988726797c0daf3",
+    "entities": [
+      {
+        "tableName": "routes",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `origin_name` TEXT NOT NULL, `origin_lat` REAL, `origin_lon` REAL, `destination_name` TEXT NOT NULL, `destination_lat` REAL, `destination_lon` REAL, `journey_json` TEXT NOT NULL, `schedule_days` INTEGER NOT NULL, `schedule_mode` TEXT, `window_start_minute` INTEGER, `window_end_minute` INTEGER, `arrive_by_minute` INTEGER, `lead_minutes` INTEGER NOT NULL, `reminders` TEXT NOT NULL, `buffer_seconds` INTEGER NOT NULL, `accessible` INTEGER NOT NULL, `manual_walk_seconds` INTEGER, `notifications_enabled` INTEGER NOT NULL, `sort_order` INTEGER NOT NULL, `created_at` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "originName",
+            "columnName": "origin_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "originLat",
+            "columnName": "origin_lat",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "originLon",
+            "columnName": "origin_lon",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "destinationName",
+            "columnName": "destination_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "destinationLat",
+            "columnName": "destination_lat",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "destinationLon",
+            "columnName": "destination_lon",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "journeyJson",
+            "columnName": "journey_json",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "scheduleDays",
+            "columnName": "schedule_days",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "scheduleMode",
+            "columnName": "schedule_mode",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "windowStartMinute",
+            "columnName": "window_start_minute",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "windowEndMinute",
+            "columnName": "window_end_minute",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "arriveByMinute",
+            "columnName": "arrive_by_minute",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "leadMinutes",
+            "columnName": "lead_minutes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "reminders",
+            "columnName": "reminders",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "bufferSeconds",
+            "columnName": "buffer_seconds",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "accessible",
+            "columnName": "accessible",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "manualWalkSeconds",
+            "columnName": "manual_walk_seconds",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "notificationsEnabled",
+            "columnName": "notifications_enabled",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sortOrder",
+            "columnName": "sort_order",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "created_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "trips",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `route_id` INTEGER NOT NULL, `started_at` INTEGER NOT NULL, `walk_seconds` INTEGER NOT NULL, `accepted` INTEGER NOT NULL, `planned_leave_at` INTEGER, `arrival` TEXT NOT NULL, FOREIGN KEY(`route_id`) REFERENCES `routes`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "routeId",
+            "columnName": "route_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "startedAt",
+            "columnName": "started_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "walkSeconds",
+            "columnName": "walk_seconds",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "accepted",
+            "columnName": "accepted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "plannedLeaveAt",
+            "columnName": "planned_leave_at",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "arrival",
+            "columnName": "arrival",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_trips_route_id",
+            "unique": false,
+            "columnNames": [
+              "route_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_trips_route_id` ON `${TABLE_NAME}` (`route_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "routes",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "route_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'cc967f5897e895096988726797c0daf3')"
+    ]
+  }
+}
