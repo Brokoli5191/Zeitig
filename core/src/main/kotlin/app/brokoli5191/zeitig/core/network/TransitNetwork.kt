@@ -1,5 +1,7 @@
 package app.brokoli5191.zeitig.core.network
 
+import app.brokoli5191.zeitig.core.journey.Journey
+import app.brokoli5191.zeitig.core.journey.Leg
 import app.brokoli5191.zeitig.core.model.Direction
 import app.brokoli5191.zeitig.core.model.Diva
 import app.brokoli5191.zeitig.core.model.GeoPoint
@@ -104,6 +106,45 @@ public class TransitNetwork(
         }
         return best?.first
     }
+
+    /** The stop point of [lineName] closest to [location], if one lies within [maxDistanceMeters]. */
+    public fun nearestStopOfLine(
+        lineName: String,
+        location: GeoPoint,
+        maxDistanceMeters: Double = 250.0,
+    ): StopId? {
+        val line = lineByName(lineName) ?: return null
+        return patterns
+            .asSequence()
+            .filter { it.lineId == line.id }
+            .flatMap { it.stops.asSequence() }
+            .distinct()
+            .mapNotNull { id -> stopPoints[id]?.location?.let { id to it.distanceTo(location) } }
+            .filter { it.second <= maxDistanceMeters }
+            .minByOrNull { it.second }
+            ?.first
+    }
+
+    /**
+     * Attaches Wiener Linien stop points to a planned [journey]: each transit leg gets the boarding
+     * target (for real-time departures) and stop IDs for boarding and alighting (for elevator
+     * outages). Legs of other operators (ÖBB, Badner Bahn) stay unmatched and run on the timetable.
+     */
+    public fun attach(journey: Journey): Journey =
+        Journey(
+            journey.legs.map { leg ->
+                if (leg !is Leg.Transit) return@map leg
+                val boardingAt = leg.from.location ?: return@map leg
+                val next = leg.intermediateStops.firstOrNull()?.location ?: leg.to.location
+                val boarding = matchBoarding(leg.line, boardingAt, next)
+                val alighting = leg.to.location?.let { nearestStopOfLine(leg.line, it) }
+                leg.copy(
+                    boarding = boarding ?: leg.boarding,
+                    from = leg.from.copy(stopId = boarding?.stopId ?: leg.from.stopId),
+                    to = leg.to.copy(stopId = alighting ?: leg.to.stopId),
+                )
+            },
+        )
 
     private fun buildLinesByStop(): Map<StopId, List<LineAtStop>> {
         val result = HashMap<StopId, MutableMap<Pair<Int, Direction>, LineAtStop>>()

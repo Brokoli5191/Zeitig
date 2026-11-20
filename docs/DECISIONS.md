@@ -191,3 +191,19 @@ given; re-verify before relying on them.
   run; a different run resets them. When several are overdue at once only the most urgent is
   delivered, and one more than 90 s late is skipped silently – except "leave now", which always
   arrives.
+
+## D21 – Transitous client
+
+- **Choice:** `v6/plan` and `v1/geocode` of the MOTIS 2 API (as in the upstream `openapi.yaml`;
+  v6 plan verified on api.transitous.org on 2026-11-20). Parameters used: `fromPlace`/`toPlace`
+  as coordinates, `time` (ISO instant), `arriveBy`, `numItineraries`, `language`, and
+  `pedestrianProfile=WHEELCHAIR` when barrier-free mode is on. A separate 1-request-per-second
+  limiter protects the volunteer service from typing-driven geocoding bursts.
+- **Mapping:** street modes become walk legs, all other modes transit legs with a transport type;
+  leg geometry is decoded from the encoded polyline at the given precision (6). Stop names drop the
+  "Wien " prefix. After planning, every leg is matched against the WL network (`TransitNetwork.attach`);
+  legs of other operators (ÖBB, Badner Bahn) remain unmatched and use the timetable.
+- **Geocoding:** results are biased to the search centre (Vienna by default) and those further than
+  80 km away are dropped, because the global index also returns e.g. Munich's "Karlsplatz (Stachus)".
+  Address nodes that differ by a few metres collapse into one suggestion.
+- **Attribution:** Transitous sources page and © OpenStreetMap contributors (About screen, README).
