@@ -207,3 +207,52 @@ given; re-verify before relying on them.
   80 km away are dropped, because the global index also returns e.g. Munich's "Karlsplatz (Stachus)".
   Address nodes that differ by a few metres collapse into one suggestion.
 - **Attribution:** Transitous sources page and © OpenStreetMap contributors (About screen, README).
+
+## D22 – Map: MapLibre Native directly, basemap.at style rewritten
+
+- **Choice:** MapLibre Android SDK 13.7.1 (BSD) in an `AndroidView`, not the Compose wrapper
+  (`org.maplibre.compose` 0.20 is pre-1.0). The date-versioned `-globe` artifacts on Maven Central
+  look like an experimental channel and are not used. basemap.at's style uses relative sprite/glyph
+  URLs and an Esri VectorTileServer root instead of TileJSON; `BasemapStyle.rewrite` makes them
+  absolute and sets an explicit tile template. The rewritten style is cached for 30 days.
+- **Fallback:** a schematic Canvas drawing of the legs (also used in screenshot tests, where
+  Robolectric cannot run OpenGL) when tiles are off, while the style loads, or offline.
+- **Size:** MapLibre's native libraries dominate the APK. x86 (32-bit) is dropped, and
+  `jniLibs.useLegacyPackaging = true` compresses them inside the APK – downloads matter more than
+  install size for an app distributed as a single APK.
+- **To verify on the device:** rendering, gestures and memory on the Galaxy S23.
+
+## D23 – UI architecture
+
+- **Navigation 3** (1.2.2) with the Material 3 adaptive list-detail scene strategy (experimental,
+  wrapped in `ui/expressive/AdaptivePanes.kt`): one pane on phones, routes and detail side by side
+  on wide windows. Predictive back comes with it. Shared bounds connect a route card with its
+  detail hero; they degrade to nothing outside navigation and with motion off.
+- **State:** every screen is a stateless composable fed by one `StateFlow` from its ViewModel;
+  `RouteStatuses` polls the shared live cache only while a screen collects (`WhileSubscribed`), so
+  nothing polls when the app is in the background.
+- **No live re-sorting:** the home list keeps the user's order, so it never "dances".
+- **Material 3 1.5 deprecations:** the old `ListItem(headlineContent=…)` and value-based `Slider`
+  overloads are deprecated; small wrappers (`RowItem`, `ValueSlider`) use the new APIs.
+- **Icons:** Material Symbols Rounded (Apache-2.0) converted to vector drawables by a script;
+  only the icons in use are kept.
+
+## D24 – Appearance and motion
+
+- **Colours:** wallpaper colours (Android 12+) by default. With a forced contrast level, the
+  wallpaper's primary colour seeds MaterialKolor at that contrast; without dynamic colour, one of
+  eight curated seeds with a scheme style (Tonal spot, Vibrant, Expressive, Fidelity). Pure black
+  overrides background and surface containers in the dark scheme.
+- **Contrast "follow system":** `UiModeManager.getContrast()` with a change listener (Android 14+).
+- **Motion:** "follow system" maps an animator duration scale of 0 to reduced motion. Full uses
+  `MotionScheme.expressive()`, reduced `MotionScheme.standard()` and no digit roll, off a scheme of
+  snap specs. Press feedback and seed-selection morphs run in the draw/layer phase.
+- **Language:** `LocaleManager` on Android 13+ (listed in the system's app-language settings);
+  Android 9–12 wrap the activity context. App-bundle language splits are disabled so switching
+  never misses resources.
+
+## D25 – Screenshot variants
+
+- **Choice:** every main screen in light/dark × English/German, plus high contrast, pure black and
+  200 % font scale (German, the longer language). Seed colours instead of wallpaper colours and
+  motion off keep the images deterministic. Robolectric 4.18.1 renders at the target SDK (37).
