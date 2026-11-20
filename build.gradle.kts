@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.roborazzi) apply false
     alias(libs.plugins.aboutlibraries) apply false
     alias(libs.plugins.kover) apply false
+    alias(libs.plugins.baselineprofile) apply false
     alias(libs.plugins.spotless)
 }
 
