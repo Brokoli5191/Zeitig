@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.roborazzi)
     alias(libs.plugins.aboutlibraries)
+    alias(libs.plugins.baselineprofile)
 }
 
 // Release contract shared with .github/workflows/release.yml – see README "Releases".
@@ -45,6 +46,10 @@ android {
             storePassword = signingEnv["SIGNING_STORE_PASSWORD"]
             keyAlias = signingEnv["SIGNING_KEY_ALIAS"]
             keyPassword = signingEnv["SIGNING_KEY_PASSWORD"]
+            // v3 lets a compromised or ageing key be rotated later without losing updates (API 28+);
+            // v2 stays for tools that only understand it.
+            enableV2Signing = true
+            enableV3Signing = true
         }
     }
 
@@ -73,6 +78,12 @@ android {
         jniLibs {
             useLegacyPackaging = true
         }
+    }
+
+    // Only the languages Zeitig is translated into: library strings in other languages would mix
+    // into an otherwise English UI.
+    androidResources {
+        localeFilters += listOf("en", "de")
     }
 
     // The in-app language switch needs every language in every install, also from app bundles.
@@ -132,6 +143,23 @@ tasks.matching { it.name == "validateSigningRelease" || it.name == "packageRelea
     dependsOn(verifyReleaseSigningEnv)
 }
 
+androidComponents {
+    // The Baseline Profile plugin's build types inherit the release signing. They only ever run on
+    // test devices, so the debug key does: profile generation never needs the release secrets.
+    onVariants { variant ->
+        if (variant.buildType == "nonMinifiedRelease" || variant.buildType == "benchmarkRelease") {
+            variant.signingConfig.from(android.signingConfigs.getByName("debug"))
+        }
+    }
+}
+
+baselineProfile {
+    // Generated on demand by the "Baseline profile" workflow and committed; a normal build never
+    // needs an emulator.
+    automaticGenerationDuringBuild = false
+    saveInSrc = true
+}
+
 aboutLibraries {
     // Offline only: licence texts are bundled at build time, nothing is fetched at runtime.
     offlineMode = true
@@ -170,6 +198,8 @@ dependencies {
     implementation(libs.maplibre.android)
     implementation(libs.aboutlibraries.core)
     implementation(libs.androidx.glance.appwidget)
+    implementation(libs.androidx.profileinstaller)
+    baselineProfile(project(":baselineprofile"))
     debugImplementation(libs.compose.ui.tooling)
     debugImplementation(libs.compose.ui.test.manifest)
 
