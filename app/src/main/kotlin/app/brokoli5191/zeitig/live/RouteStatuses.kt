@@ -73,6 +73,27 @@ class RouteStatuses(
         }
     }
 
+    /**
+     * One evaluation of [routes] for the notification service: refreshes the shared cache only when
+     * [refresh] is set (screen on or a reminder due), otherwise works from what is in memory.
+     */
+    suspend fun evaluateOnce(
+        routes: List<Route>,
+        refresh: Boolean,
+    ): List<LiveRoute> {
+        val stops = routes.mapNotNull { it.journey.firstTransit?.boarding?.stopId }.toSet()
+        val lines = routes.flatMap { it.journey.lines }.toSet()
+        val snapshot =
+            when {
+                stops.isEmpty() -> LiveSnapshot(emptyList(), emptyList(), null, null)
+                refresh -> container.liveDepartures.snapshot(stops, lines)
+                else -> container.liveDepartures.cached(stops, lines)
+            }
+        val settings = container.settings.current()
+        val now = container.clock.instant()
+        return routes.map { evaluate(it, snapshot, settings, now) }
+    }
+
     private suspend fun evaluate(
         route: Route,
         snapshot: LiveSnapshot,

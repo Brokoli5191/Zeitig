@@ -19,6 +19,7 @@ import app.brokoli5191.zeitig.data.reference.SnapshotSource
 import app.brokoli5191.zeitig.data.repo.RouteRepository
 import app.brokoli5191.zeitig.data.routing.TransitousPlanner
 import app.brokoli5191.zeitig.data.settings.SettingsRepository
+import app.brokoli5191.zeitig.monitor.StatusBoard
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -69,6 +70,8 @@ class AppContainer(
     }
 
     val mapStyles by lazy { MapStyleRepository(httpClient, File(appContext.cacheDir, "map"), clock, Dispatchers.IO) }
+
+    val statusBoard = StatusBoard()
 
     val statusCalculator = RouteStatusCalculator()
     val statistics = RouteStatistics
