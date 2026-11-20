@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">Zeitig</string>
+    <string name="app_claim">Know when to leave – not just when the tram comes.</string>
+    <string name="home_empty_title">No favourites yet</string>
+    <string name="home_empty_body">Add your daily route and Zeitig tells you the moment to walk out the door.</string>
+</resources>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_claim">Wissen, wann du losmusst – nicht nur, wann die Bim kommt.</string>
+    <string name="home_empty_title">Noch keine Favoriten</string>
+    <string name="home_empty_body">Leg deinen täglichen Weg an, und Zeitig sagt dir, wann du bei der Tür hinausmusst.</string>
+</resources>
