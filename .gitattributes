@@ -5,7 +5,7 @@
 
 # Bundled Wiener Linien snapshots keep the upstream CRLF bytes so the refresh
 # workflow's byte-for-byte diff stays meaningful.
-app/src/main/assets/ogd/*.csv -text
+data/src/main/assets/ogd/*.csv -text
 
 *.png binary
 *.jpg binary
