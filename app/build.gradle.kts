@@ -45,6 +45,10 @@ android {
             storePassword = signingEnv["SIGNING_STORE_PASSWORD"]
             keyAlias = signingEnv["SIGNING_KEY_ALIAS"]
             keyPassword = signingEnv["SIGNING_KEY_PASSWORD"]
+            // v3 lets a compromised or ageing key be rotated later without losing updates (API 28+);
+            // v2 stays for tools that only understand it.
+            enableV2Signing = true
+            enableV3Signing = true
         }
     }
 
@@ -73,6 +77,12 @@ android {
         jniLibs {
             useLegacyPackaging = true
         }
+    }
+
+    // Only the languages Zeitig is translated into: library strings in other languages would mix
+    // into an otherwise English UI.
+    androidResources {
+        localeFilters += listOf("en", "de")
     }
 
     // The in-app language switch needs every language in every install, also from app bundles.
