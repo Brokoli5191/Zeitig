@@ -14,6 +14,7 @@ choices in `docs/DECISIONS.md` (context, choice, rejected alternatives).
 ```sh
 ./gradlew spotlessApply                      # format (ktlint via Spotless)
 ./gradlew spotlessCheck lint testDebugUnitTest verifyRoborazziDebug :core:koverVerify assembleDebug   # = CI
+./gradlew :baselineprofile:compileNonMinifiedReleaseKotlin   # CI's second step
 ./gradlew recordRoborazziDebug               # re-record reference screenshots into docs/screenshots/
 ./gradlew :core:test :core:koverHtmlReport   # engine tests + coverage report (gate: 90 % lines)
 ./gradlew :app:assembleRelease -PappVersionName=1.2.0 -PappVersionCode=1020099   # needs SIGNING_* env
