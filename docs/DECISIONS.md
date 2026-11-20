@@ -90,3 +90,65 @@ given; re-verify before relying on them.
 - **Choice:** Roborazzi with Robolectric native graphics, device qualifier `w411dp-h891dp-xhdpi`
   (Galaxy S23 logical size, rendered at 2×) to keep PNGs small but sharp. `outputDir` is
   `docs/screenshots/`, which the README embeds directly.
+
+## D11 – Scope change: journey planning and map (user request, 2026-11-20)
+
+- **Context:** After milestone 1 the brief was extended: find the fastest route with an API, show it
+  on a map, plan routes with reminders at 5/3/1/0 minutes, choose on which weekdays a route is
+  taken, plus arrival-time planning with automatic re-planning, disruption/barrier-free warnings,
+  ETA sharing and statistics. This overrides the v1 non-goals "no journey planner" and "no map SDK".
+- **Choice:**
+  - Routing via **Transitous** (MOTIS 2 API, `api.transitous.org`): free, no key, open source and
+    open data; verified with a Vienna query (U1 legs, transfers, leg geometry). It has no Wiener
+    Linien real-time data, so the first transit leg is matched to a WL stop point and the WL monitor
+    supplies the real-time departure that drives `leaveAt`. Volunteer-run and best effort,
+    attribution required; its logs keep IP, time and request URL (which contains origin and
+    destination), so online routing is **opt-in** with a privacy notice. Simple routes (stop +
+    line + direction) keep working fully offline without it.
+  - Map: **MapLibre Native** (Compose wrapper `org.maplibre.compose`) with **basemap.at** vector
+    tiles (official Austrian basemap, hosted by Stadt Wien). No Google Play Services.
+- **Rejected:** VAO "Start" (free tier needs a contract and an API key, which cannot stay secret in
+  an open-source APK); Wiener Linien's own routing service (listed on their open-data page, but no
+  current endpoint documentation found); ÖBB HAFAS `mgate.exe` (undocumented, grey zone);
+  on-device RAPTOR over GTFS (large preprocessing effort for v1); osmdroid (raster only).
+- **Not taken from the offered extras:** public-holiday and vacation pause.
+
+## D12 – Bundled reference snapshot includes the line patterns
+
+- **Context:** Routing results use Austrian global stop IDs (`at:49:1320:0:2`), not Wiener Linien
+  stop IDs, and the WL monitor needs the latter.
+- **Choice:** Bundle all five CSVs, including `fahrwegverlaeufe` (1.5 MB raw, ≈ 330 KB compressed).
+  The stop sequences let the app list lines/directions per stop offline and match a planned
+  boarding (line, position, next stop) to the right WL stop point and direction.
+- **Rejected:** Matching by name only (ambiguous across directions), a live `diva` monitor query
+  per match (costs the rate-limited budget and fails at night).
+
+## D13 – One rate limiter for every request to wienerlinien.at
+
+- **Choice:** A single suspending `RateLimiter` (≥ 15 s between request starts, FIFO) guards the
+  monitor, `trafficInfoList` and the CSV refresh. Callers queue instead of failing; batching several
+  stops into one monitor request keeps the budget usable.
+
+## D14 – Runtime refresh of the reference data
+
+- **Choice:** At most weekly, triggered from the foreground: fetch the version file; when it differs,
+  download into a staging directory, validate (parses, plausible counts), then swap in atomically.
+  A failed refresh leaves the active snapshot untouched and is retried next time. The bundled
+  snapshot is never modified, and gaps in a refreshed snapshot are filled from it.
+- **Finding:** Upstream snapshots flicker – between two downloads on 2026-11-20 individual stop
+  points lost (and others regained) DIVA and coordinates. Both the runtime loader and the monthly
+  workflow therefore fill such gaps from the previous data (`scripts/fill-ogd-gaps.py`).
+
+## D15 – Search normalisation
+
+- **Choice:** Fold case, diacritics, `ß`→`ss` and the digraphs `ae/oe/ue`, expand `Str.`, `Pl.`,
+  `G.`, `St.`, `Hbf`; apply the same transformation to index and query. Tokens match exactly, by
+  prefix, or (≥ 4 letters) within an optimal-string-alignment distance of 1–2. Ties break by the
+  number of stop points of a station (a proxy for importance).
+
+## D16 – Monthly snapshot workflow
+
+- **Choice:** `refresh-stops.yml` downloads the CSVs, fills gaps, ignores version-only changes,
+  runs `:data:testDebugUnitTest` itself and opens a PR with `GITHUB_TOKEN`.
+- **Caveat:** PRs created with `GITHUB_TOKEN` do not trigger CI, and creating them requires the
+  repository setting "Allow GitHub Actions to create and approve pull requests".
