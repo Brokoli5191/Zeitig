@@ -1,0 +1,83 @@
+name: Refresh stop data
+
+# Monthly: download the Wiener Linien reference CSVs and open a PR when the data changed.
+# The version file changes every few hours upstream and alone never triggers a PR.
+#
+# Note: pull requests created with GITHUB_TOKEN do not trigger other workflows, so this job runs
+# the data tests itself. Requires "Allow GitHub Actions to create and approve pull requests"
+# (Settings → Actions → General → Workflow permissions).
+
+on:
+  schedule:
+    - cron: "17 4 3 * *"
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: refresh-stops
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    name: Refresh snapshot
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Download fresh snapshot
+        run: |
+          set -euo pipefail
+          cp data/src/main/assets/ogd/wienerlinien-ogd-haltepunkte.csv "$RUNNER_TEMP/haltepunkte-previous.csv"
+          scripts/refresh-ogd-snapshot.sh data/src/main/assets/ogd
+          # Upstream occasionally drops DIVA/coordinates of single stop points; keep the last known values.
+          filled="$(python3 -I scripts/fill-ogd-gaps.py "$RUNNER_TEMP/haltepunkte-previous.csv" data/src/main/assets/ogd/wienerlinien-ogd-haltepunkte.csv)"
+          echo "Filled gaps in $filled stop points from the previous snapshot."
+
+      - name: Detect data changes
+        id: diff
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- data/src/main/assets/ogd ':(exclude)data/src/main/assets/ogd/wienerlinien-ogd-version.csv'; then
+            echo "Reference data unchanged."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            git diff --stat -- data/src/main/assets/ogd
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-java@v5
+        if: steps.diff.outputs.changed == 'true'
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - uses: gradle/actions/setup-gradle@v5
+        if: steps.diff.outputs.changed == 'true'
+        with:
+          cache-read-only: true
+
+      - name: Validate the new snapshot
+        if: steps.diff.outputs.changed == 'true'
+        run: ./gradlew :data:testDebugUnitTest
+
+      - name: Open pull request
+        if: steps.diff.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          branch="data/ogd-snapshot-$(date -u +%Y-%m-%d)-${GITHUB_RUN_ID}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$branch"
+          git add data/src/main/assets/ogd
+          git commit -m "chore(data): refresh Wiener Linien reference snapshot"
+          git push origin "$branch"
+          gh pr create --base main --head "$branch" --label maintenance \
+            --title "chore(data): refresh Wiener Linien reference snapshot" \
+            --body "Automated monthly refresh of the bundled Wiener Linien reference CSVs (stops, stations, lines, line patterns). \`:data:testDebugUnitTest\` passed in the refresh job. Datenquelle: Stadt Wien – data.wien.gv.at (CC BY 4.0)."
