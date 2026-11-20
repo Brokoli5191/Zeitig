@@ -2,6 +2,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Wiener Linien real-time data, reference-data refresh, opt-in routing, map tiles. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Only to skip the weekly stop-data refresh on metered connections. -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- "Use my location once" and (later) trip measurement; never in the background. -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
     <application
         android:name=".ZeitigApplication"
         android:allowBackup="true"

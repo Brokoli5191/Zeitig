@@ -3,7 +3,9 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.roborazzi)
+    alias(libs.plugins.aboutlibraries)
 }
 
 // Release contract shared with .github/workflows/release.yml – see README "Releases".
@@ -31,6 +33,8 @@ android {
         versionName = appVersionName
         versionCode = appVersionCode
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        // MapLibre ships native code; 32-bit x86 only matters for old emulators.
+        ndk { abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64") }
     }
 
     signingConfigs {
@@ -61,6 +65,21 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
+    }
+
+    // Sideloaded APKs are downloaded whole: compress MapLibre's native libraries (≈ 36 MB stored
+    // uncompressed otherwise) and let the installer extract them.
+    packaging {
+        jniLibs {
+            useLegacyPackaging = true
+        }
+    }
+
+    // The in-app language switch needs every language in every install, also from app bundles.
+    bundle {
+        language {
+            enableSplit = false
+        }
     }
 
     // IzzyOnDroid / F-Droid: no Google-encrypted dependency blob in the artifacts.
@@ -113,6 +132,18 @@ tasks.matching { it.name == "validateSigningRelease" || it.name == "packageRelea
     dependsOn(verifyReleaseSigningEnv)
 }
 
+aboutLibraries {
+    // Offline only: licence texts are bundled at build time, nothing is fetched at runtime.
+    offlineMode = true
+    collect {
+        fetchRemoteLicense = false
+        fetchRemoteFunding = false
+    }
+    export {
+        excludeFields.addAll("generated")
+    }
+}
+
 dependencies {
     implementation(project(":data"))
 
@@ -126,6 +157,18 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
+    implementation(libs.androidx.material3.adaptive)
+    implementation(libs.androidx.material3.adaptive.layout)
+    implementation(libs.androidx.material3.adaptive.navigation3)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.materialkolor)
+    implementation(libs.maplibre.android)
+    implementation(libs.aboutlibraries.core)
     debugImplementation(libs.compose.ui.tooling)
     debugImplementation(libs.compose.ui.test.manifest)
 
@@ -139,4 +182,5 @@ dependencies {
     testImplementation(libs.roborazzi.junit.rule)
     testImplementation(libs.androidx.test.core)
     testImplementation(libs.androidx.test.ext.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
 }

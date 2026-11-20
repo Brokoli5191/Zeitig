@@ -15,14 +15,13 @@ plugins {
 
 spotless {
     val ktlintVersion = libs.versions.ktlint.get()
+    // Explicit source roots: walking the whole tree races with Spotless' own build/ output.
     kotlin {
-        target("**/*.kt")
-        targetExclude("**/build/**")
+        target("*/src/**/*.kt")
         ktlint(ktlintVersion)
     }
     kotlinGradle {
-        target("**/*.gradle.kts")
-        targetExclude("**/build/**")
+        target("*.gradle.kts", "*/*.gradle.kts")
         ktlint(ktlintVersion)
     }
 }
