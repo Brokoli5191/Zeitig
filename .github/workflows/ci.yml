@@ -39,6 +39,10 @@ jobs:
           ./gradlew --continue
           spotlessCheck lint testDebugUnitTest verifyRoborazziDebug :core:koverVerify assembleDebug
 
+      # The generator needs an emulator to run, but it must always compile.
+      - name: Compile the Baseline Profile module
+        run: ./gradlew :baselineprofile:compileNonMinifiedReleaseKotlin
+
       - name: Upload debug APK
         if: always()
         uses: actions/upload-artifact@v7
