@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Favourites, trip durations and settings travel with the user; cached OGD data does not. -->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="file" path="ogd" />
+        <exclude domain="file" path="datastore/cache.preferences_pb" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="file" path="ogd" />
+    </device-transfer>
+</data-extraction-rules>
