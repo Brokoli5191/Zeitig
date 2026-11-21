@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="320" viewBox="0 0 1280 320" role="img" aria-labelledby="title">
+  <title id="title">Zeitig – wann muss ich los?</title>
+  <defs>
+    <linearGradient id="icon" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#00857A"/>
+      <stop offset="1" stop-color="#005048"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="320" rx="40" fill="#0E1715"/>
+  <circle cx="1180" cy="40" r="180" fill="none" stroke="#1C2A27" stroke-width="28"/>
+  <g transform="translate(88 60)">
+    <rect width="200" height="200" rx="58" fill="url(#icon)"/>
+    <g transform="translate(100 100) scale(2.55) translate(-54 -51.5)">
+      <path d="M54,57L54,42A15,15 0,0 1,66.99 49.5Z" fill="#FFC857"/>
+      <circle cx="54" cy="57" r="21" fill="none" stroke="#FFF8EC" stroke-width="6"/>
+      <rect x="48" y="25" width="12" height="7" rx="2" fill="#FFF8EC"/>
+      <circle cx="54" cy="57" r="3.5" fill="#FFF8EC"/>
+    </g>
+  </g>
+  <text x="330" y="168" font-family="'Google Sans Flex','Google Sans','Roboto Flex',Roboto,'Segoe UI','Helvetica Neue',Arial,sans-serif" font-size="104" font-weight="700" letter-spacing="-2" fill="#E2F1ED">Zeitig</text>
+  <text x="334" y="226" font-family="'Google Sans Flex','Google Sans','Roboto Flex',Roboto,'Segoe UI','Helvetica Neue',Arial,sans-serif" font-size="38" font-weight="500" fill="#B9C8C4">Wann muss ich los?</text>
+  <g transform="translate(852 60)">
+    <rect width="340" height="200" rx="44" fill="#00504A"/>
+    <text x="36" y="58" font-family="'Google Sans Flex','Google Sans','Roboto Flex',Roboto,'Segoe UI','Helvetica Neue',Arial,sans-serif" font-size="26" font-weight="600" fill="#CBE9E2">Losgehen in</text>
+    <text x="34" y="138" font-family="'Google Sans Flex','Google Sans','Roboto Flex',Roboto,'Segoe UI','Helvetica Neue',Arial,sans-serif" font-size="92" font-weight="700" fill="#A6EFE1">7<tspan font-size="44" font-weight="600" dx="10">min</tspan></text>
+    <rect x="36" y="158" width="58" height="28" rx="8" fill="#9D6930"/>
+    <text x="65" y="179" text-anchor="middle" font-family="'Google Sans Flex','Google Sans','Roboto Flex',Roboto,'Segoe UI','Helvetica Neue',Arial,sans-serif" font-size="20" font-weight="700" fill="#FFFFFF">U6</text>
+    <text x="106" y="179" font-family="'Google Sans Flex','Google Sans','Roboto Flex',Roboto,'Segoe UI','Helvetica Neue',Arial,sans-serif" font-size="21" font-weight="500" fill="#CBE9E2">Floridsdorf · 07:43</text>
+    <circle cx="300" cy="50" r="7" fill="#4FDBC9"/>
+  </g>
+</svg>
