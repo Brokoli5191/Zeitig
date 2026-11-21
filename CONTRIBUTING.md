@@ -8,7 +8,8 @@ Thanks for helping Vienna leave on time.
   any of these will be declined, however small.
 - New dependencies need a reason in `docs/DECISIONS.md` (licence, size, maintenance, network use).
 - Network access exists only for the Wiener Linien provider and the reference-data refresh, the
-  opt-in Transitous routing and address search, and basemap.at map tiles while the map is on.
+  opt-in Transitous routing and address search, basemap.at map tiles while the map is on, and
+  expanding a Google Maps short link the user shares into the app.
 
 ## Workflow
 

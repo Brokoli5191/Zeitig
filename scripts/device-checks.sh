@@ -169,4 +169,8 @@ fi
 ask "26" "Median timeToInitialDisplayMs without / with Baseline Profile?"
 
 log ""
+log "## 27 Share from Google Maps"
+ask "27" "Google Maps: plan a transit route, Share → 'Plan in Zeitig'. Start and destination taken over, connection planned (or online planning offered)? A shared place becomes the destination?"
+
+log ""
 log "Report written to $report"

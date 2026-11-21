@@ -356,3 +356,31 @@ given; re-verify before relying on them.
   `-PappVersionName=0.1.0-rc1 -PappVersionCode=1001` produces exactly one APK. `apksigner` and
   `aapt2 dump badging` confirm the signature, versionName and versionCode – the same checks
   `release.yml` runs.
+
+## D33 – Routes shared from map apps
+
+- **Context:** people plan a trip in Google Maps and want the same way in Zeitig without typing
+  start and destination again.
+- **Choice:** Zeitig is a share target (`ACTION_SEND`, `text/plain`) and opens `geo:` links.
+  `SharedRoutes` in `:core` reads several link kinds:
+  - Google Maps directions, places, searches and Maps URLs (`api=1`);
+  - the same links wrapped in Google's EU consent redirect;
+  - `geo:` URIs, Apple Maps, OpenStreetMap and OsmAnd links, and bare coordinates.
+- **Google's `data=` block:** parsed as the token tree it is (`!<field><type><value>`; `m<n>`
+  groups the next n tokens).
+  - Each waypoint carries `!8m2!3d<lat>!4d<lng>` (current links) or `!2m2!1d<lng>!2d<lat>`
+    (older ones).
+  - `!4e1` marks "Your location"; that start is left for the user to set.
+  - Names come from the path segments.
+- **Short links** (`maps.app.goo.gl`): one GET to the short-link host with redirects turned off,
+  no cookies. The `Location` header is the full Maps URL; google.com itself is never contacted.
+  - This is a new network host, contacted only when the user shares such a link into the app.
+  - Checked on 2026-11-21: 302 with the app's user agent, 404 for unknown links.
+- **After the import:**
+  - with online planning on, Zeitig plans at once;
+  - otherwise a card offers to turn it on (one tap, kept like the setting), or to continue offline
+    with the nearest station within 1.5 km already chosen;
+  - names without a position are geocoded via Transitous when online.
+- **Rejected:**
+  - loading the Google Maps page (consent wall, scraping, more data to Google);
+  - Google's Maps APIs (API key, terms, Play-Services ecosystem).

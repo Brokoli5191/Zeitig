@@ -41,7 +41,8 @@ Package root: `app.brokoli5191.zeitig` (permanent – never change the applicati
 - Kotlin + Jetpack Compose + Material 3 Expressive, single activity, ViewModel + `StateFlow` (UDF).
 - Manual DI via `AppContainer`; no Hilt/Koin. No Retrofit; OkHttp + kotlinx.serialization.
 - No Google Play Services, no trackers, no analytics. Network access only for: the Wiener Linien
-  provider and CSV refresh, opt-in Transitous routing/geocoding, and map tiles (basemap.at).
+  provider and CSV refresh, opt-in Transitous routing/geocoding, map tiles (basemap.at), and
+  expanding a Google Maps short link (maps.app.goo.gl) the user shares into the app.
 - All OGD requests go through the single global rate limiter (≥ 15 s apart).
 - Inject `java.time.Clock` everywhere; all API times are parsed with their offset and handled in
   `Europe/Vienna`.
