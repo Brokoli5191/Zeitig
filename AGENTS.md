@@ -50,4 +50,7 @@ Package root: `app.brokoli5191.zeitig` (permanent – never change the applicati
 - Strings: English in `values/`, German with Austrian usage in `values-de/`.
 - Conventional Commits, small. One branch + PR per milestone, labelled `feature`/`fix`/`maintenance`.
 - Never commit secrets; signing values exist only as GitHub Actions secrets.
+- No AI attribution in commits or pull requests: no `Co-Authored-By` or session trailers, no
+  "Generated with" footers. Commits are authored as
+  `Brokoli5191 <119419930+Brokoli5191@users.noreply.github.com>`.
 - Things that need a real phone go into `docs/DEVICE-CHECKS.md` and `scripts/device-checks.sh`.
