@@ -11,9 +11,11 @@ data class RouteKey(
     val id: Long,
 ) : NavKey
 
+/** [sharedText]: a link or text shared from a map app, imported into a new route. */
 @Serializable
 data class EditorKey(
     val id: Long = 0,
+    val sharedText: String? = null,
 ) : NavKey
 
 @Serializable

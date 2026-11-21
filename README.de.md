@@ -67,6 +67,9 @@ Alle Varianten (dunkel, Englisch, hoher Kontrast, reines Schwarz, 200 % Schriftg
 - **Wegplanung mit Karte.** Optional: die schnellste Verbindung mit Umstiegen über
   [Transitous](https://transitous.org), auf einer basemap.at-Karte, auf Wunsch barrierefrei. Ohne
   das wählst du Haltestelle und Linie aus dem mitgelieferten Netz – das Planen klappt dann offline.
+- **Direkt aus Google Maps.** Teile eine Route oder einen Ort aus Google Maps (oder Apple Maps,
+  OpenStreetMap, jedem `geo:`-Link) an Zeitig: Start und Ziel werden übernommen und die
+  Verbindung geplant.
 - **Störungen und Aufzüge.** Eine Störung oder ein kaputter Aufzug auf deinen Linien wird einmal
   gemeldet, nicht jeden Morgen aufs Neue.
 - **Auch außerhalb der App.** Der Countdown läuft in einer Benachrichtigung (unter Android 16 als
@@ -119,6 +122,8 @@ spricht mit:
 - **Transitous** (`transitous.org`) erst, wenn du die Wegplanung einschaltest: Start und Ziel der
   gesuchten Verbindung oder der Text, den du in die Adresssuche tippst.
 - **basemap.at** nur bei eingeschalteter Karte: die Kartenkacheln des Ausschnitts, den du ansiehst.
+- **Google** (`maps.app.goo.gl`) nur, wenn du einen Google-Maps-Kurzlink an Zeitig teilst: eine
+  Anfrage, die liest, wohin der Link zeigt. Google Maps selbst wird nicht geladen.
 
 Wege, Gehzeiten und Einstellungen bleiben auf deinem Handy. Die Android-eigene Sicherung nimmt sie
 mit, wenn du sie verwendest; heruntergeladene Haltestellendaten und Caches bleiben draußen.

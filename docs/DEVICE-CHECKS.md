@@ -47,6 +47,7 @@ app-ops it toggles are restored at the end, and Doze is unforced.
 | 24 | Reboot | Reboot with a scheduled route | `dumpsys alarm` lists the window alarm again after boot. |
 | 25 | Battery | *Settings › Battery › App power management* | Zeitig is not "Deep sleeping"; note the default Samsung puts it in. |
 | 26 | Cold start | `./gradlew :baselineprofile:connectedBenchmarkReleaseAndroidTest` with the phone connected (installs a debug-signed build: uninstall a release install first) | `startupWithBaselineProfile` has a clearly lower median `timeToInitialDisplayMs` than `startupWithoutProfile`; note both medians. |
+| 27 | Share from Google Maps | Google Maps: plan a transit route → Share → "Plan in Zeitig"; also share a single place | The editor shows start and destination, then plans (online) or offers online planning; a place becomes the destination. |
 
 ## Notes for the README
 

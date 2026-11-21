@@ -64,6 +64,9 @@ All variants (dark, German, high contrast, pure black, 200 % font size) are in
 - **Journey planning with a map.** Optional: the fastest connection with transfers via
   [Transitous](https://transitous.org), shown on a basemap.at map, step-free if you want. Without
   it, pick a stop and a line from the bundled network – planning then works offline.
+- **Straight from Google Maps.** Share a route or a place from Google Maps (or Apple Maps,
+  OpenStreetMap, any `geo:` link) to Zeitig: start and destination are taken over and the
+  connection is planned.
 - **Disruptions and lifts.** A disruption or a broken lift on your lines is reported once, not
   every morning again.
 - **Outside the app, too.** The countdown runs in a notification (a Live Update on Android 16), in
@@ -114,6 +117,8 @@ No account, no server of its own, no analytics, no ads, no Google Play Services.
 - **Transitous** (`transitous.org`) only after you turn on journey planning: start and destination
   of the connection you search for, or the text you type into the address search.
 - **basemap.at** only with the map turned on: the map tiles of the area you look at.
+- **Google** (`maps.app.goo.gl`) only when you share a Google Maps short link into Zeitig: one
+  request that reads where the link points. Google Maps itself is not loaded.
 
 Routes, walking times and settings stay on your phone. Android's own backup includes them if you
 use it; downloaded stop data and caches are left out.

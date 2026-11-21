@@ -19,6 +19,7 @@ import app.brokoli5191.zeitig.data.reference.SnapshotSource
 import app.brokoli5191.zeitig.data.repo.RouteRepository
 import app.brokoli5191.zeitig.data.routing.TransitousPlanner
 import app.brokoli5191.zeitig.data.settings.SettingsRepository
+import app.brokoli5191.zeitig.data.share.ShortLinkResolver
 import app.brokoli5191.zeitig.monitor.StatusBoard
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -57,6 +58,9 @@ class AppContainer(
     suspend fun network(): TransitNetwork = referenceData.network()
 
     val planner by lazy { TransitousPlanner(httpClient, transitousLimiter, { network() }) }
+
+    /** Expands maps.app.goo.gl links shared into the app – one request to the short-link host. */
+    val shortLinks by lazy { ShortLinkResolver(httpClient) }
 
     private val database by lazy { ZeitigDatabase.create(appContext) }
     val routes by lazy { RouteRepository(database.routes(), database.trips(), clock) }

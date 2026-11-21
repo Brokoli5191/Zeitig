@@ -66,10 +66,17 @@ fun ZeitigNavHost(
     container: AppContainer,
     permissions: PermissionRequests,
     openRouteRequests: Flow<Long>,
+    importRequests: Flow<String>,
     modifier: Modifier = Modifier,
 ) {
     val requestLocationPermission = permissions::location
     val backStack = rememberNavBackStack(HomeKey)
+    LaunchedEffect(importRequests) {
+        importRequests.collect { text ->
+            backStack.removeAll { it is EditorKey }
+            backStack.add(EditorKey(sharedText = text))
+        }
+    }
     LaunchedEffect(openRouteRequests) {
         openRouteRequests.collect { id ->
             backStack.removeAll { it is RouteKey || it is EditorKey }
@@ -153,7 +160,10 @@ fun ZeitigNavHost(
                         }
                         entry<EditorKey> { key ->
                             val vm: RouteEditorViewModel =
-                                viewModel(key = "editor-${key.id}", factory = factory { RouteEditorViewModel(it, key.id) })
+                                viewModel(
+                                    key = "editor-${key.id}-${key.sharedText.hashCode()}",
+                                    factory = factory { RouteEditorViewModel(it, key.id, key.sharedText) },
+                                )
                             val state by vm.state.collectAsStateWithLifecycle()
                             RouteEditorScreen(
                                 state = state,
@@ -208,6 +218,9 @@ fun ZeitigNavHost(
                                             point != null
                                         },
                                         onCloseSearch = vm::closeSearch,
+                                        onRetryImport = { vm.importShared() },
+                                        onPlanOnline = vm::enableOnlinePlanning,
+                                        onDismissImport = vm::dismissImport,
                                     ),
                                 map = { journey, mod -> RouteMap(journey, tiles, mod) },
                             )

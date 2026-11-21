@@ -89,6 +89,7 @@ fun RouteEditorScreen(
             Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
+            state.import?.let { ImportCard(it, actions) }
             OutlinedTextField(
                 value = state.name,
                 onValueChange = actions.onName,
@@ -129,7 +130,60 @@ data class EditorActions(
     val onMyLocation: () -> Unit = {},
     val onCoordinates: (String) -> Boolean = { false },
     val onCloseSearch: () -> Unit = {},
+    val onRetryImport: () -> Unit = {},
+    val onPlanOnline: () -> Unit = {},
+    val onDismissImport: () -> Unit = {},
 )
+
+/** What happened to a route shared from a map app, and the one decision left to the user. */
+@Composable
+private fun ImportCard(
+    status: ImportStatus,
+    actions: EditorActions,
+) {
+    val failed = status == ImportStatus.UNREADABLE || status == ImportStatus.OFFLINE
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(24.dp),
+        color = if (failed) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.secondaryContainer,
+        contentColor = if (failed) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onSecondaryContainer,
+    ) {
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            when (status) {
+                ImportStatus.READING -> {
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        DelayedLoadingIndicator(Modifier.size(32.dp), delayMillis = 0)
+                        Text(stringResource(R.string.import_reading), style = MaterialTheme.typography.bodyLarge)
+                    }
+                }
+
+                ImportStatus.UNREADABLE -> {
+                    Text(stringResource(R.string.import_unreadable), style = MaterialTheme.typography.bodyLarge)
+                    TextButton(onClick = actions.onDismissImport, modifier = Modifier.align(Alignment.End)) {
+                        Text(stringResource(R.string.import_dismiss))
+                    }
+                }
+
+                ImportStatus.OFFLINE -> {
+                    Text(stringResource(R.string.import_offline), style = MaterialTheme.typography.bodyLarge)
+                    Row(Modifier.align(Alignment.End), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        TextButton(onClick = actions.onDismissImport) { Text(stringResource(R.string.import_dismiss)) }
+                        Button(onClick = actions.onRetryImport) { Text(stringResource(R.string.import_retry)) }
+                    }
+                }
+
+                ImportStatus.ASK_ONLINE -> {
+                    Text(stringResource(R.string.import_ask_online_title), style = MaterialTheme.typography.titleMedium)
+                    Text(stringResource(R.string.import_ask_online), style = MaterialTheme.typography.bodyMedium)
+                    Row(Modifier.align(Alignment.End), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        TextButton(onClick = actions.onDismissImport) { Text(stringResource(R.string.import_offline_continue)) }
+                        Button(onClick = actions.onPlanOnline) { Text(stringResource(R.string.import_plan_online)) }
+                    }
+                }
+            }
+        }
+    }
+}
 
 @Composable
 private fun PlaceField(

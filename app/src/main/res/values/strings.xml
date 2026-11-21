@@ -298,4 +298,16 @@
         <item quantity="one">+%1$d more route</item>
         <item quantity="other">+%1$d more routes</item>
     </plurals>
+
+    <!-- Routes shared from map apps -->
+    <string name="share_target">Plan in Zeitig</string>
+    <string name="import_reading">Reading the shared route…</string>
+    <string name="import_unreadable">There is no route in this link. Zeitig reads links from Google Maps, Apple Maps and OpenStreetMap, and geo: links.</string>
+    <string name="import_offline">The short link could not be expanded. That needs a connection to Google (maps.app.goo.gl).</string>
+    <string name="import_retry">Try again</string>
+    <string name="import_dismiss">OK</string>
+    <string name="import_ask_online_title">Start and destination are in</string>
+    <string name="import_ask_online">Connections with transfers come from online journey planning via Transitous; start and destination are sent to transitous.org. Without it, you pick the stop and line yourself.</string>
+    <string name="import_plan_online">Plan online</string>
+    <string name="import_offline_continue">Continue offline</string>
 </resources>

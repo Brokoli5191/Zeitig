@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # One-time setup of the release signing key for .github/workflows/release.yml (Linux, macOS).
+# On Ubuntu: sudo apt install -y default-jre-headless gh && gh auth login, then run this script.
 #
 # Creates the release keystore on this computer and stores the four repository secrets the
 # release workflow needs. The password is random and never printed. Needs a JDK (keytool) and the
@@ -19,8 +20,13 @@ keystore="$out_dir/zeitig-release.jks"
 
 keytool_bin="$(command -v keytool || true)"
 if [[ -z "$keytool_bin" && -n "${JAVA_HOME:-}" && -x "$JAVA_HOME/bin/keytool" ]]; then keytool_bin="$JAVA_HOME/bin/keytool"; fi
-[[ -n "$keytool_bin" ]] || { echo "keytool not found: install a JDK first." >&2; exit 1; }
-command -v gh >/dev/null || { echo "gh not found: install the GitHub CLI first." >&2; exit 1; }
+if [[ -z "$keytool_bin" ]] || ! command -v gh >/dev/null; then
+  echo "Missing tools: keytool (from a Java runtime) and/or gh (GitHub CLI)." >&2
+  if command -v apt-get >/dev/null; then
+    echo "On Ubuntu or Debian: sudo apt update && sudo apt install -y default-jre-headless gh" >&2
+  fi
+  exit 1
+fi
 gh auth status --hostname github.com >/dev/null || { echo "Run 'gh auth login' first." >&2; exit 1; }
 
 [[ ! -e "$keystore" ]] || { echo "$keystore already exists. Refusing to replace a release key." >&2; exit 1; }
