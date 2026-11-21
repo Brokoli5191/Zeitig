@@ -181,9 +181,8 @@ Ein Maintainer startet ein Release unter *Actions › Release › Run workflow* 
 Version, beglaubigt ihre Herkunft und legt erst dann Tag und GitHub-Release mit Notizen aus den
 gemergten Pull Requests an. Der Signaturschlüssel existiert nur als GitHub-Actions-Secret.
 
-Vor dem ersten Release legt ein Maintainer diesen Schlüssel einmalig mit `scripts/setup-signing.ps1`
-(Windows) oder `scripts/setup-signing.sh` (Linux, macOS) an. Das Skript erzeugt den Keystore lokal
-und setzt die vier Secrets über die GitHub CLI; das Passwort wird nie ausgegeben.
+Vor dem ersten Release legt ein Maintainer diesen Schlüssel einmalig an, von Hand oder per Skript:
+Die Schritte stehen in [`docs/RELEASING.md`](docs/RELEASING.md) (Englisch).
 
 Das Baseline Profile, das den ersten Start beschleunigt, erzeugt bei Bedarf der
 [Baseline-Profile-Workflow](.github/workflows/baseline-profile.yml) auf einem Emulator.
