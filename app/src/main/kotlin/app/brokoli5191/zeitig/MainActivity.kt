@@ -39,6 +39,8 @@ class MainActivity :
     private var pendingNotificationResult: ((Boolean) -> Unit)? = null
     private val openRoute = Channel<Long>(Channel.BUFFERED)
     private val openRouteRequests = openRoute.receiveAsFlow()
+    private val importRoute = Channel<String>(Channel.BUFFERED)
+    private val importRequests = importRoute.receiveAsFlow()
 
     private val locationPermission =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { result ->
@@ -61,7 +63,9 @@ class MainActivity :
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-        handle(intent)
+        // After a configuration change the back stack is restored; handling the intent again would
+        // open the same route or import twice.
+        if (savedInstanceState == null) handle(intent)
         setContent {
             val settings by container.settings.settings.collectAsStateWithLifecycle(initialValue = null)
             val appearance = settings?.appearance ?: return@setContent
@@ -73,7 +77,7 @@ class MainActivity :
                     enableEdgeToEdge(statusBarStyle = style, navigationBarStyle = style)
                     onDispose {}
                 }
-                ZeitigNavHost(container, permissions = this, openRouteRequests = openRouteRequests)
+                ZeitigNavHost(container, permissions = this, openRouteRequests = openRouteRequests, importRequests = importRequests)
             }
         }
     }
@@ -84,6 +88,10 @@ class MainActivity :
     }
 
     private fun handle(intent: Intent?) {
+        sharedRoute(intent)?.let {
+            importRoute.trySend(it)
+            return
+        }
         val routeId = intent?.getLongExtra(Intents.EXTRA_ROUTE_ID, 0L)?.takeIf { it != 0L } ?: return
         openRoute.trySend(routeId)
         if (intent.action == Intents.ACTION_WATCH) {
@@ -98,6 +106,24 @@ class MainActivity :
             }
         }
     }
+
+    /** A route or place shared from a map app: share sheet text, or a geo: link opened with Zeitig. */
+    private fun sharedRoute(intent: Intent?): String? =
+        when (intent?.action) {
+            Intent.ACTION_SEND -> {
+                listOfNotNull(intent.getStringExtra(Intent.EXTRA_SUBJECT), intent.getCharSequenceExtra(Intent.EXTRA_TEXT)?.toString())
+                    .joinToString("\n")
+                    .takeIf { it.isNotBlank() }
+            }
+
+            Intent.ACTION_VIEW -> {
+                intent.data?.takeIf { it.scheme == "geo" }?.toString()
+            }
+
+            else -> {
+                null
+            }
+        }
 
     override fun onStart() {
         super.onStart()

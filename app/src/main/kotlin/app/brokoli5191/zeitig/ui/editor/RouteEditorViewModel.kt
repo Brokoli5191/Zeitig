@@ -21,6 +21,9 @@ import app.brokoli5191.zeitig.core.schedule.Schedule
 import app.brokoli5191.zeitig.core.schedule.ScheduleCalendar
 import app.brokoli5191.zeitig.core.schedule.ScheduleMode
 import app.brokoli5191.zeitig.core.search.StationMatch
+import app.brokoli5191.zeitig.core.share.SharedPlace
+import app.brokoli5191.zeitig.core.share.SharedRoutes
+import app.brokoli5191.zeitig.data.share.ShortLinkResult
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,10 +34,25 @@ import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.Duration
 import java.time.LocalTime
+import java.util.Locale
 
 enum class TimeMode { WINDOW, ARRIVE_BY, NONE }
 
 enum class PlaceTarget { ORIGIN, DESTINATION, BOARDING }
+
+/** Progress of a route shared from a map app into the editor. */
+enum class ImportStatus {
+    READING,
+
+    /** Nothing in the link Zeitig can use. */
+    UNREADABLE,
+
+    /** The short link could not be expanded (offline, or the issuer did not answer). */
+    OFFLINE,
+
+    /** Start and destination are in, but connections need the online planner the user has not enabled. */
+    ASK_ONLINE,
+}
 
 data class PlaceUi(
     val name: String,
@@ -78,6 +96,7 @@ data class EditorUiState(
     val boardingLine: LineAtStop? = null,
     val search: PlaceSearchUi? = null,
     val saving: Boolean = false,
+    val import: ImportStatus? = null,
 ) {
     val journey: Journey?
         get() =
@@ -104,6 +123,7 @@ data class EditorUiState(
 class RouteEditorViewModel(
     private val container: AppContainer,
     private val routeId: Long,
+    private val sharedText: String? = null,
 ) : ViewModel() {
     private val _state = MutableStateFlow(EditorUiState(routeId = routeId))
     val state: StateFlow<EditorUiState> = _state.asStateFlow()
@@ -121,6 +141,99 @@ class RouteEditorViewModel(
                 )
             }
             if (routeId != 0L) container.routes.route(routeId)?.let(::load)
+            sharedText?.let(::importShared)
+        }
+    }
+
+    // --- routes shared from map apps ----------------------------------------------------------
+
+    /** Reads a route shared from Google Maps & co.; also the retry after a failure. */
+    fun importShared(text: String = sharedText.orEmpty()) {
+        _state.update { it.copy(import = ImportStatus.READING) }
+        viewModelScope.launch {
+            val link = SharedRoutes.findLink(text)
+            val expanded =
+                if (link != null && SharedRoutes.isShortLink(link)) {
+                    when (val result = container.shortLinks.resolve(link)) {
+                        is ShortLinkResult.Resolved -> {
+                            result.url
+                        }
+
+                        is ShortLinkResult.Failed -> {
+                            val status = if (result.reason == FailureReason.NETWORK) ImportStatus.OFFLINE else ImportStatus.UNREADABLE
+                            _state.update { it.copy(import = status) }
+                            return@launch
+                        }
+                    }
+                } else {
+                    text
+                }
+            val route = SharedRoutes.parse(expanded)
+            if (route == null) {
+                _state.update { it.copy(import = ImportStatus.UNREADABLE) }
+                return@launch
+            }
+            val online = _state.value.routingEnabled
+            val origin = route.origin?.let { place(it, online) }
+            val destination = place(route.destination, online)
+            _state.update { s ->
+                s.copy(
+                    origin = origin ?: s.origin,
+                    destination = destination,
+                    name = s.name.ifBlank { destination.name },
+                    itineraries = emptyList(),
+                    selected = null,
+                    import = if (online) null else ImportStatus.ASK_ONLINE,
+                )
+            }
+            if (online) {
+                if (_state.value.canSearch) plan()
+            } else {
+                suggestBoarding()
+            }
+        }
+    }
+
+    /** The user agreed to online planning for this route; it stays on, as in the settings. */
+    fun enableOnlinePlanning() {
+        viewModelScope.launch {
+            container.settings.update { it.copy(routingEnabled = true) }
+            _state.update { it.copy(routingEnabled = true, import = null) }
+            val s = _state.value
+            val origin = s.origin?.takeIf { it.location == null }?.let { place(SharedPlace(it.name, null), true) }
+            val destination = s.destination?.takeIf { it.location == null }?.let { place(SharedPlace(it.name, null), true) }
+            _state.update { it.copy(origin = origin ?: it.origin, destination = destination ?: it.destination) }
+            if (_state.value.canSearch) plan()
+        }
+    }
+
+    fun dismissImport() = _state.update { it.copy(import = null) }
+
+    /** A name without a position gets one from the geocoder when online planning is on. */
+    private suspend fun place(
+        shared: SharedPlace,
+        online: Boolean,
+    ): PlaceUi {
+        val location = shared.location
+        val name = shared.name ?: location?.let { String.format(Locale.ROOT, "%.5f, %.5f", it.latitude, it.longitude) }.orEmpty()
+        if (location != null || !online || name.isBlank()) return PlaceUi(name, location)
+        val match = (container.planner.geocode(name, limit = 1) as? GeocodeResult.Success)?.matches?.firstOrNull()
+        return PlaceUi(name, match?.location)
+    }
+
+    /** Offline: start from the nearest station to the origin, so only the line is left to pick. */
+    private suspend fun suggestBoarding() {
+        val from = _state.value.origin?.location ?: return
+        if (_state.value.boarding != null) return
+        val network = container.network()
+        val nearest =
+            network.stations.values
+                .mapNotNull { station -> station.location?.let { station to it.distanceTo(from) } }
+                .filter { (station, distance) -> distance <= SUGGEST_RADIUS_M && network.linesAtStation(station.diva).isNotEmpty() }
+                .minByOrNull { it.second }
+                ?.first ?: return
+        _state.update {
+            it.copy(boarding = PlaceUi(nearest.name, nearest.location, nearest.diva), boardingLines = network.linesAtStation(nearest.diva))
         }
     }
 
@@ -401,5 +514,6 @@ class RouteEditorViewModel(
 
     private companion object {
         const val SEARCH_DEBOUNCE_MS = 300L
+        const val SUGGEST_RADIUS_M = 1_500.0
     }
 }

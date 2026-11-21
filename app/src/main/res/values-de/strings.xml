@@ -288,4 +288,16 @@
         <item quantity="one">+%1$d weiterer Weg</item>
         <item quantity="other">+%1$d weitere Wege</item>
     </plurals>
+
+    <!-- Aus Karten-Apps geteilte Routen -->
+    <string name="share_target">In Zeitig planen</string>
+    <string name="import_reading">Geteilte Route wird gelesen …</string>
+    <string name="import_unreadable">In diesem Link steckt keine Route. Zeitig liest Links von Google Maps, Apple Maps und OpenStreetMap sowie geo:-Links.</string>
+    <string name="import_offline">Der Kurzlink ließ sich nicht auflösen. Dafür braucht Zeitig eine Verbindung zu Google (maps.app.goo.gl).</string>
+    <string name="import_retry">Nochmal versuchen</string>
+    <string name="import_dismiss">OK</string>
+    <string name="import_ask_online_title">Start und Ziel sind übernommen</string>
+    <string name="import_ask_online">Verbindungen mit Umstiegen liefert die Online-Wegplanung über Transitous; dabei gehen Start und Ziel an transitous.org. Ohne sie wählst du Haltestelle und Linie selbst.</string>
+    <string name="import_plan_online">Online planen</string>
+    <string name="import_offline_continue">Offline weiter</string>
 </resources>
