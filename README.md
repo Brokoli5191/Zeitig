@@ -174,9 +174,8 @@ A maintainer starts a release under *Actions › Release › Run workflow* with 
 version, attests its provenance, and only then creates the tag and the GitHub release with notes
 from the merged pull requests. The signing key exists only as GitHub Actions secrets.
 
-Before the first release, a maintainer creates that key once with `scripts/setup-signing.ps1`
-(Windows) or `scripts/setup-signing.sh` (Linux, macOS). The script generates the keystore locally
-and stores the four secrets through the GitHub CLI; the password is never printed.
+Before the first release, a maintainer creates that key once, by hand or with a script:
+[`docs/RELEASING.md`](docs/RELEASING.md) has the steps.
 
 The Baseline Profile that speeds up the first start is generated on demand by the
 [Baseline profile workflow](.github/workflows/baseline-profile.yml) on an emulator.
